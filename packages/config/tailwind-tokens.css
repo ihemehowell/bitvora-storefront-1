@@ -1,0 +1,17 @@
+@theme {
+  /* Brand colors — Bitvora Storefront */
+  --color-brand-50: #f5f3ff;
+  --color-brand-500: #7c3aed;
+  --color-brand-600: #6d28d9;
+  --color-brand-900: #2e1065;
+
+  --color-ink: #1a1a1a;
+  --color-paper: #fafafa;
+
+  /* Fonts */
+  --font-sans: "Inter", "system-ui", sans-serif;
+  --font-display: "Bricolage Grotesque", sans-serif;
+
+  /* Radius */
+  --radius-card: 0.75rem;
+}
