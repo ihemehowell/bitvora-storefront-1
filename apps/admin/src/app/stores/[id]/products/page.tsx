@@ -18,8 +18,8 @@ export default async function ProductsPage({
     .order('created_at', { ascending: false })
 
   return (
-    <div className="max-w-2xl mx-auto mt-20">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-2xl">
+      <div className="flex justify-between items-center mb-1">
         <h1 className="text-2xl font-display">Products</h1>
         <Link
           href={`/stores/${storeId}/products/new`}
@@ -28,22 +28,35 @@ export default async function ProductsPage({
           + Add product
         </Link>
       </div>
+      <p className="text-gray-500 text-sm mb-6">
+        {products?.length ?? 0} product{products?.length === 1 ? '' : 's'}
+      </p>
 
       {(!products || products.length === 0) && (
-        <p className="text-gray-500">No products yet. Add your first one.</p>
+        <div className="border border-dashed rounded-lg p-10 text-center text-gray-500">
+          <p className="mb-3">No products yet.</p>
+          <Link href={`/stores/${storeId}/products/new`} className="text-brand-600 font-medium">
+            Add your first product →
+          </Link>
+        </div>
       )}
 
       <div className="space-y-3">
         {products?.map((product) => (
           <div key={product.id} className="flex items-center justify-between border rounded-md p-3">
             <div className="flex items-center gap-3">
-              {product.images?.[0] && (
+              {product.images?.[0] ? (
                 <img src={product.images[0]} alt="" className="w-12 h-12 object-cover rounded-md" />
+              ) : (
+                <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center text-gray-300 text-xs">
+                  No image
+                </div>
               )}
               <div>
                 <p className="font-medium">{product.name}</p>
                 <p className="text-sm text-gray-500">
                   ₦{Number(product.price).toLocaleString()} · Stock: {product.stock_quantity}
+                  {!product.is_active && <span className="ml-2 text-red-500">Inactive</span>}
                 </p>
               </div>
             </div>
