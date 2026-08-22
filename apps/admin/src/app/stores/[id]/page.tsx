@@ -1,5 +1,6 @@
 
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '../../../lib/supabase/server'
 
 export default async function StoreDashboardPage({
@@ -23,12 +24,16 @@ export default async function StoreDashboardPage({
   return (
     <div className="max-w-2xl mx-auto mt-20">
       <h1 className="text-2xl font-display">{store.name}</h1>
-      <p className="text-gray-500">
-        /{store.slug} · {store.industry}
-      </p>
-      <p className="mt-4 text-sm text-gray-400">
-        Products and homepage builder coming next.
-      </p>
+      <p className="text-gray-500">/{store.slug} · {store.industry}</p>
+
+      <div className="mt-6">
+        <Link
+          href={`/stores/${store.id}/products`}
+          className="inline-block bg-brand-600 text-white rounded-md px-4 py-2 text-sm"
+        >
+          Manage products
+        </Link>
+      </div>
     </div>
   )
 }
