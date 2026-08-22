@@ -13,7 +13,7 @@ function slugify(name: string) {
     .replace(/-+/g, '-')
 }
 
-export async function createStore(formData: FormData) {
+export async function createStore(prevState: { error?: string } | undefined, formData: FormData) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
