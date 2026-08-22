@@ -1,17 +1,29 @@
 @theme {
-  /* Brand colors — Bitvora Storefront */
-  --color-brand-50: #f5f3ff;
-  --color-brand-500: #7c3aed;
-  --color-brand-600: #6d28d9;
-  --color-brand-900: #2e1065;
+  /* Bitvora Storefront palette */
+  --color-paper: #faf7f1;
+  --color-ink: #1e1b16;
 
-  --color-ink: #1a1a1a;
-  --color-paper: #fafafa;
+  --color-indigo-900: #1b2456;
+  --color-indigo-700: #22307a;
+  --color-indigo-600: #2a3b8f;
+  --color-indigo-50: #eef0fa;
+
+  --color-marigold-500: #e8a33d;
+  --color-marigold-50: #fdf3e3;
+
+  --color-palm-600: #3f7d5c;
+  --color-palm-50: #eaf4ee;
+
+  --color-pepper-600: #c1443b;
+  --color-pepper-50: #fbeceb;
+
+  --color-sand-200: #e7e1d6;
+  --color-sand-100: #f2eee5;
 
   /* Fonts */
+  --font-display: "Space Grotesk", sans-serif;
   --font-sans: "Inter", "system-ui", sans-serif;
-  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
-  /* Radius */
-  --radius-card: 0.75rem;
+  --radius-card: 0.875rem;
 }

@@ -1,5 +1,5 @@
 {
-"name": "@bitvora/ui",
+  "name": "@bitvora/ui",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,6 +11,13 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "tailwindcss": "^4.3.3"
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   }
 }

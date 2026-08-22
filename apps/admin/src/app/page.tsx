@@ -1,5 +1,6 @@
-
 import Link from 'next/link'
+import { Card } from '@bitvora/ui/src/Card'
+import { Button } from '@bitvora/ui/src/Button'
 import { createClient } from '../lib/supabase/server'
 
 export default async function DashboardPage() {
@@ -20,35 +21,51 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-display">
-          {merchant?.full_name ? `Welcome back, ${merchant.full_name}` : 'Your stores'}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-display font-semibold tracking-tight">
+          {merchant?.full_name ? `Welcome back, ${merchant.full_name.split(' ')[0]}` : 'Your stores'}
         </h1>
-        <Link href="/stores/new" className="bg-brand-600 text-white rounded-md px-4 py-2 text-sm">
-          + New store
+        <Link href="/stores/new">
+          <Button>+ New store</Button>
         </Link>
       </div>
 
       {(!stores || stores.length === 0) ? (
-        <div className="border border-dashed rounded-lg p-10 text-center text-gray-500">
-          <p className="mb-3">You haven&apos;t created a store yet.</p>
-          <Link href="/stores/new" className="text-brand-600 font-medium">
+        <Card className="text-center py-14 relative overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle, var(--color-indigo-900) 1px, transparent 1px)',
+              backgroundSize: '16px 16px',
+            }}
+          />
+          <p className="relative text-ink/60 mb-3">You haven&apos;t created a store yet.</p>
+          <Link href="/stores/new" className="relative text-indigo-600 font-medium">
             Create your first store →
           </Link>
-        </div>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stores.map((store) => (
-            <Link
-              key={store.id}
-              href={`/stores/${store.id}`}
-              className="border rounded-lg p-4 hover:border-brand-500 transition-colors"
-            >
-              <p className="font-medium">{store.name}</p>
-              <p className="text-sm text-gray-500">/{store.slug} · {store.industry}</p>
-              <p className="text-xs mt-2 inline-block rounded-full px-2 py-0.5 bg-gray-100 text-gray-500">
-                {store.is_published ? 'Published' : 'Draft'}
-              </p>
+            <Link key={store.id} href={`/stores/${store.id}`}>
+              <Card className="hover:border-indigo-600 transition-colors h-full">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-display font-medium text-lg">{store.name}</p>
+                    <p className="text-sm text-ink/50 font-mono">/{store.slug}</p>
+                  </div>
+                  <span
+                    className={`text-xs rounded-full px-2.5 py-1 font-medium ${
+                      store.is_published
+                        ? 'bg-palm-50 text-palm-600'
+                        : 'bg-sand-100 text-ink/50'
+                    }`}
+                  >
+                    {store.is_published ? 'Published' : 'Draft'}
+                  </span>
+                </div>
+                <p className="text-sm text-ink/50 mt-2 capitalize">{store.industry}</p>
+              </Card>
             </Link>
           ))}
         </div>
