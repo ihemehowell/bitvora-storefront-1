@@ -1,0 +1,11 @@
+@source "../../packages/ui/src";
+
+@theme {
+  --color-storefront-bg: #ffffff;
+  --color-storefront-ink: #171717;
+  --color-storefront-muted: #737373;
+  --color-storefront-border: #e5e5e5;
+  --color-storefront-surface: #fafafa;
+
+  --font-storefront: "Inter", "system-ui", sans-serif;
+}

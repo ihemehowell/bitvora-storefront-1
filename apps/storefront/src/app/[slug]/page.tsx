@@ -25,26 +25,22 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-semibold">{store.name}</h1>
-        <p className="text-ink/50 capitalize mt-1">{store.industry}</p>
+      <div className="mb-10">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">{store.name}</h1>
+        <p className="text-[#737373] capitalize mt-1">{store.industry}</p>
       </div>
 
       {(!products || products.length === 0) && (
         <div className="text-center py-20">
-          <PackageBox className="w-8 h-8 text-ink/20 mx-auto mb-3" />
-          <p className="text-ink/50">No products available yet. Check back soon.</p>
+          <PackageBox className="w-8 h-8 text-[#d4d4d4] mx-auto mb-3" />
+          <p className="text-[#737373]">No products available yet. Check back soon.</p>
         </div>
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
         {products?.map((product) => (
-          <Link
-            key={product.id}
-            href={`/${slug}/products/${product.slug}`}
-            className="group"
-          >
-            <div className="aspect-square rounded-xl overflow-hidden bg-sand-100 mb-2">
+          <Link key={product.id} href={`/${slug}/product/${product.slug}`} className="group">
+            <div className="aspect-square rounded-xl overflow-hidden bg-[#fafafa] mb-2.5 relative">
               {product.images?.[0] ? (
                 <img
                   src={product.images[0]}
@@ -53,12 +49,17 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <PackageBox className="w-8 h-8 text-ink/20" />
+                  <PackageBox className="w-8 h-8 text-[#d4d4d4]" />
                 </div>
               )}
+              {product.stock_quantity === 0 && (
+                <span className="absolute top-2 left-2 bg-white/90 text-red-600 text-xs font-medium rounded-full px-2 py-1">
+                  Out of stock
+                </span>
+              )}
             </div>
-            <p className="font-medium text-sm">{product.name}</p>
-            <p className="text-sm text-ink/60 font-mono">
+            <p className="font-medium text-sm leading-tight">{product.name}</p>
+            <p className="text-sm text-[#525252] font-mono mt-0.5">
               ₦{Number(product.price).toLocaleString()}
             </p>
           </Link>
