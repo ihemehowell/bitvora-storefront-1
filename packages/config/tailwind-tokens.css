@@ -1,5 +1,6 @@
+@source "../../packages/ui/src";
+
 @theme {
-  /* Bitvora Storefront palette */
   --color-paper: #faf7f1;
   --color-ink: #1e1b16;
 
@@ -20,7 +21,6 @@
   --color-sand-200: #e7e1d6;
   --color-sand-100: #f2eee5;
 
-  /* Fonts */
   --font-display: "Space Grotesk", sans-serif;
   --font-sans: "Inter", "system-ui", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
