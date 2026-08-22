@@ -249,6 +249,9 @@ importers:
       react-hook-form:
         specifier: ^7.85.0
         version: 7.85.0(react@19.2.8)
+      switch-icons:
+        specifier: ^0.2.0
+        version: 0.2.0(react@19.2.8)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -2540,6 +2543,11 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  switch-icons@0.2.0:
+    resolution: {integrity: sha512-0fhVe/jsuzkHyTzYpxEGBDyaZMKo4ReqY8oSV40p3xo778aWzkhvllmmaDnz0y8kSAQOFS2zdjDdtJSkIb7pmw==}
+    peerDependencies:
+      react: '>=18'
 
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
@@ -4857,6 +4865,10 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  switch-icons@0.2.0(react@19.2.8):
+    dependencies:
+      react: 19.2.8
 
   tailwindcss@4.3.3: {}
 

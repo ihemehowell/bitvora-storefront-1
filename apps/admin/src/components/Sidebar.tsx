@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Home, Plus, Grid, PackageBox, Storefront } from 'switch-icons'
 import { LogoutButton } from './LogoutButton'
 
 export function Sidebar({ userEmail }: { userEmail: string | null }) {
@@ -12,7 +13,7 @@ export function Sidebar({ userEmail }: { userEmail: string | null }) {
   const isActive = (href: string) => pathname === href
 
   const linkClass = (active: boolean) =>
-    `block rounded-lg px-3 py-2 text-sm transition-colors ${
+    `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
       active
         ? 'bg-white/10 text-white font-medium'
         : 'text-indigo-100/70 hover:bg-white/5 hover:text-white'
@@ -23,7 +24,6 @@ export function Sidebar({ userEmail }: { userEmail: string | null }) {
       className="w-64 shrink-0 flex flex-col h-screen sticky top-0 relative overflow-hidden"
       style={{ backgroundColor: 'var(--color-indigo-900)' }}
     >
-      {/* Adire-inspired dot signature, faint, top of sidebar */}
       <div
         className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
@@ -32,19 +32,24 @@ export function Sidebar({ userEmail }: { userEmail: string | null }) {
         }}
       />
 
-      <div className="relative p-6 border-b border-white/10">
-        <p className="font-display font-semibold text-lg text-white tracking-tight">
-          Bitvora
-        </p>
-        <p className="font-display text-sm text-indigo-200/70 -mt-0.5">Storefront</p>
+      <div className="relative p-6 border-b border-white/10 flex items-center gap-2.5">
+        <Storefront className="w-5 h-5 text-marigold-500" />
+        <div>
+          <p className="font-display font-semibold text-lg text-white tracking-tight leading-none">
+            Bitvora
+          </p>
+          <p className="font-display text-sm text-indigo-200/70 leading-none mt-0.5">Storefront</p>
+        </div>
       </div>
 
       <nav className="relative flex-1 p-3 space-y-1">
         <Link href="/" className={linkClass(isActive('/'))}>
+          <Home className="w-4 h-4 shrink-0" />
           Dashboard
         </Link>
         <Link href="/stores/new" className={linkClass(isActive('/stores/new'))}>
-          + New store
+          <Plus className="w-4 h-4 shrink-0" />
+          New store
         </Link>
 
         {storeId && (
@@ -53,12 +58,14 @@ export function Sidebar({ userEmail }: { userEmail: string | null }) {
               This store
             </p>
             <Link href={`/stores/${storeId}`} className={linkClass(isActive(`/stores/${storeId}`))}>
+              <Grid className="w-4 h-4 shrink-0" />
               Overview
             </Link>
             <Link
               href={`/stores/${storeId}/products`}
               className={linkClass(isActive(`/stores/${storeId}/products`))}
             >
+              <PackageBox className="w-4 h-4 shrink-0" />
               Products
             </Link>
           </div>
