@@ -3,8 +3,11 @@
 import { useActionState } from 'react'
 import { createProduct } from '../actions'
 import { ImageUploader } from '../ImageUploader'
-
-
+import { Button } from '@bitvora/ui/src/Button'
+import { Input } from '@bitvora/ui/src/Input'
+import { Textarea } from '@bitvora/ui/src/Textarea'
+import { Label } from '@bitvora/ui/src/Label'
+import { AlertTriangle } from 'switch-icons'
 
 export function ProductForm({ storeId }: { storeId: string }) {
   const boundAction = createProduct.bind(null, storeId)
@@ -12,29 +15,36 @@ export function ProductForm({ storeId }: { storeId: string }) {
 
   return (
     <form action={formAction} className="space-y-4">
-      {state?.error && <p className="text-red-600 text-sm">{state.error}</p>}
+      {state?.error && (
+        <div className="flex items-start gap-2 bg-pepper-50 text-pepper-600 text-sm rounded-lg px-3 py-2">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          {state.error}
+        </div>
+      )}
       <div>
-        <label className="block text-sm font-medium mb-1">Name</label>
-        <input name="name" type="text" required minLength={2} className="w-full border rounded-md p-2" />
+        <Label htmlFor="name">Name</Label>
+        <Input id="name" name="name" type="text" required minLength={2} />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Description</label>
-        <textarea name="description" rows={3} className="w-full border rounded-md p-2" />
+        <Label htmlFor="description">Description</Label>
+        <Textarea id="description" name="description" rows={3} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="price">Price (₦)</Label>
+          <Input id="price" name="price" type="number" step="0.01" min="0" required className="font-mono" />
+        </div>
+        <div>
+          <Label htmlFor="stock_quantity">Stock</Label>
+          <Input id="stock_quantity" name="stock_quantity" type="number" min="0" defaultValue={0} className="font-mono" />
+        </div>
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Price (₦)</label>
-        <input name="price" type="number" step="0.01" min="0" required className="w-full border rounded-md p-2" />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Stock quantity</label>
-        <input name="stock_quantity" type="number" min="0" defaultValue={0} className="w-full border rounded-md p-2" />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Category</label>
-        <input name="category" type="text" placeholder="e.g. Dresses" className="w-full border rounded-md p-2" />
+        <Label htmlFor="category">Category</Label>
+        <Input id="category" name="category" type="text" placeholder="e.g. Dresses" />
       </div>
       <ImageUploader />
-      <button type="submit" className="w-full bg-brand-600 text-white rounded-md p-2">Add product</button>
+      <Button type="submit" className="w-full">Add product</Button>
     </form>
   )
 }

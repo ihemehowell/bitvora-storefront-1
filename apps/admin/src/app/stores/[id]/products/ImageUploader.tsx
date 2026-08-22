@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { uploadToCloudinary } from '../../../../lib/cloudinary-upload'
 
+import { Label } from '@bitvora/ui/src/Label'
+import { Upload, Close } from 'switch-icons'
+import { uploadToCloudinary } from '../../../../lib/cloudinary-upload'
 
 export function ImageUploader({ initialImages = [] }: { initialImages?: string[] }) {
   const [images, setImages] = useState<string[]>(initialImages)
@@ -37,30 +39,27 @@ export function ImageUploader({ initialImages = [] }: { initialImages?: string[]
   return (
     <div>
       <input type="hidden" name="images" value={JSON.stringify(images)} />
+      <Label>Product images</Label>
 
-      <label className="block text-sm font-medium mb-1">Product images</label>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFileChange}
-        disabled={uploading}
-        className="w-full border rounded-md p-2 text-sm"
-      />
-      {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+      <label className="flex items-center gap-2 border border-dashed border-sand-200 rounded-lg px-3 py-3 text-sm text-ink/50 cursor-pointer hover:border-indigo-600 hover:text-indigo-600 transition-colors">
+        <Upload className="w-4 h-4" />
+        {uploading ? 'Uploading...' : 'Click to upload images'}
+        <input type="file" accept="image/*" multiple onChange={handleFileChange} disabled={uploading} className="hidden" />
+      </label>
+
+      {error && <p className="text-sm text-pepper-600 mt-1.5">{error}</p>}
 
       {images.length > 0 && (
         <div className="grid grid-cols-4 gap-2 mt-3">
           {images.map((url) => (
-            <div key={url} className="relative">
-              <img src={url} alt="" className="w-full h-20 object-cover rounded-md" />
+            <div key={url} className="relative group">
+              <img src={url} alt="" className="w-full h-20 object-cover rounded-lg" />
               <button
                 type="button"
                 onClick={() => removeImage(url)}
-                className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs"
+                className="absolute -top-1.5 -right-1.5 bg-pepper-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                ×
+                <Close className="w-3 h-3" />
               </button>
             </div>
           ))}
