@@ -1,9 +1,10 @@
-
-
 import { createClient } from '../../../../lib/supabase/server';
 import { notFound } from 'next/navigation'
-import { PackageBox, MessageCircle, ArrowLeft } from 'switch-icons'
+import { PackageBox, ArrowLeft } from 'switch-icons'
+
 import Link from 'next/link'
+import { AddToCartButton } from './AddToCartButton'
+import { BrandIcon } from '../../../../components/BrandIcon';
 
 export default async function ProductPage({
   params,
@@ -31,6 +32,8 @@ export default async function ProductPage({
     .single()
 
   if (!product) notFound()
+
+  const accent = store.palette?.primary || '#171717'
 
   const whatsappMessage = encodeURIComponent(
     `Hi ${store.name} 👋\nI'd like to order:\n\n*${product.name}* — ₦${Number(product.price).toLocaleString()}\n\nQuantity: 1`
@@ -86,16 +89,25 @@ export default async function ProductPage({
             )}
           </div>
 
+          <AddToCartButton
+            slug={slug}
+            productId={product.id}
+            name={product.name}
+            price={product.price}
+            image={product.images?.[0] ?? null}
+            inStock={product.stock_quantity > 0}
+            accent={accent}
+          />
+
           <a
-            href={`https://wa.me/?text=${whatsappMessage}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg px-4 py-3.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: store.palette?.primary || '#171717' }}
-          >
-            <MessageCircle className="w-4 h-4" />
-            Order via WhatsApp
-          </a>
+              href={`https://wa.me/?text=${whatsappMessage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full rounded-lg px-4 py-3 text-sm text-[#737373] mt-3 hover:text-[#171717] transition-colors"
+            >
+              <BrandIcon icon="Whatsapp" className="w-4 h-4" />
+              Or order via WhatsApp instead
+            </a>
         </div>
       </div>
     </div>
