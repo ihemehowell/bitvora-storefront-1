@@ -19,3 +19,19 @@ export async function toggleStorePublish(storeId: string, currentState: boolean)
   revalidatePath(`/stores/${storeId}`)
   revalidatePath('/')
 }
+
+export async function updateStorePalette(storeId: string, formData: FormData) {
+  const supabase = await createClient()
+  const primary = formData.get('primary') as string
+
+  const { error } = await supabase
+    .from('stores')
+    .update({ palette: { primary } })
+    .eq('id', storeId)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath(`/stores/${storeId}`)
+}

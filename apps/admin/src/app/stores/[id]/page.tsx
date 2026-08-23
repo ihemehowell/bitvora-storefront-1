@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { PublishToggle } from './PublishToggle'
+import { BrandColorPicker } from './BrandColorPicker'
 import { Card } from '@bitvora/ui/src/Card'
 import { PackageBox } from 'switch-icons'
 import { createClient } from '../../../lib/supabase/server'
@@ -22,14 +23,16 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
       </div>
       <p className="text-ink/50 font-mono text-sm mb-6">/{store.slug} · {store.industry}</p>
 
-      <Card
-        className={`mb-6 ${store.is_published ? 'bg-palm-50 border-palm-600/20' : ''}`}
-      >
+      <Card className={`mb-4 ${store.is_published ? 'bg-palm-50 border-palm-600/20' : ''}`}>
         <p className={`text-sm ${store.is_published ? 'text-palm-600' : 'text-ink/60'}`}>
           {store.is_published
             ? 'Your store is live and visible to customers.'
             : 'Your store is a draft. Publish it once you have added products.'}
         </p>
+      </Card>
+
+      <Card className="mb-4">
+        <BrandColorPicker storeId={store.id} initialColor={store.palette?.primary || '#171717'} />
       </Card>
 
       <Link href={`/stores/${store.id}/products`}>
