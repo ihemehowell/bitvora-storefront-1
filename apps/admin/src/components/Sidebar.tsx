@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Plus, Grid, PackageBox, Storefront } from 'switch-icons'
+import { Home, Plus, Grid, PackageBox, Storefront, Receipt } from 'switch-icons'
 import { LogoutButton } from './LogoutButton'
 
 export function Sidebar({ userEmail }: { userEmail: string | null }) {
@@ -68,6 +68,13 @@ export function Sidebar({ userEmail }: { userEmail: string | null }) {
               <PackageBox className="w-4 h-4 shrink-0" />
               Products
             </Link>
+            <Link
+            href={`/stores/${storeId}/orders`}
+            className={linkClass(isActive(`/stores/${storeId}/orders`))}
+          >
+            <Receipt className="w-4 h-4 shrink-0" />
+            Orders
+          </Link>
           </div>
         )}
       </nav>
