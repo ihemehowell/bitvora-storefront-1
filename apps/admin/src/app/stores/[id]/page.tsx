@@ -1,19 +1,33 @@
 
+import { createClient } from '../../../lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { PublishToggle } from './PublishToggle'
 import { BrandColorPicker } from './BrandColorPicker'
+import { StoreContentForm } from './StoreContentForm'
 import { Card } from '@bitvora/ui/src/Card'
 import { PackageBox } from 'switch-icons'
-import { createClient } from '../../../lib/supabase/server'
 
 export default async function StoreDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
 
   const { data: store, error } = await supabase.from('stores').select('*').eq('id', id).single()
-
   if (error || !store) notFound()
+
+  const { data: heroSection } = await supabase
+    .from('sections')
+    .select('config')
+    .eq('store_id', id)
+    .eq('type', 'hero')
+    .maybeSingle()
+
+  const heroConfig = heroSection?.config as {
+    heading?: string
+    subheading?: string
+    image_url?: string
+    cta_text?: string
+  } | undefined
 
   return (
     <div className="max-w-2xl">
@@ -33,6 +47,17 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
 
       <Card className="mb-4">
         <BrandColorPicker storeId={store.id} initialColor={store.palette?.primary || '#171717'} />
+      </Card>
+
+      <Card className="mb-4">
+        <p className="text-sm font-medium mb-3">Homepage hero</p>
+        <StoreContentForm
+          storeId={store.id}
+          initialHeading={heroConfig?.heading || ''}
+          initialSubheading={heroConfig?.subheading || ''}
+          initialImageUrl={heroConfig?.image_url || ''}
+          initialCtaText={heroConfig?.cta_text || ''}
+        />
       </Card>
 
       <Link href={`/stores/${store.id}/products`}>

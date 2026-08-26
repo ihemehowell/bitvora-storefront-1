@@ -35,3 +35,41 @@ export async function updateStorePalette(storeId: string, formData: FormData) {
 
   revalidatePath(`/stores/${storeId}`)
 }
+
+export async function upsertHeroSection(storeId: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const heading = formData.get('heading') as string
+  const subheading = formData.get('subheading') as string
+  const imageUrl = formData.get('image_url') as string
+  const ctaText = formData.get('cta_text') as string
+
+  const { data: existing } = await supabase
+    .from('sections')
+    .select('id')
+    .eq('store_id', storeId)
+    .eq('type', 'hero')
+    .maybeSingle()
+
+  const config = {
+    heading,
+    subheading,
+    image_url: imageUrl || null,
+    cta_text: ctaText || 'Shop now',
+  }
+
+  if (existing) {
+    const { error } = await supabase
+      .from('sections')
+      .update({ config })
+      .eq('id', existing.id)
+    if (error) return { error: error.message }
+  } else {
+    const { error } = await supabase
+      .from('sections')
+      .insert({ store_id: storeId, type: 'hero', position: 0, config, is_visible: true })
+    if (error) return { error: error.message }
+  }
+
+  revalidatePath(`/stores/${storeId}`)
+}

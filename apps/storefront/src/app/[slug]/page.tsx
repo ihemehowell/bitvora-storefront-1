@@ -9,12 +9,27 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
   const { data: store } = await supabase
     .from('stores')
-    .select('id, name, industry')
+    .select('id, name, industry, palette')
     .eq('slug', slug)
     .eq('is_published', true)
     .single()
 
   if (!store) return null
+
+  const { data: heroSection } = await supabase
+    .from('sections')
+    .select('config')
+    .eq('store_id', store.id)
+    .eq('type', 'hero')
+    .eq('is_visible', true)
+    .maybeSingle()
+
+  const hero = heroSection?.config as {
+    heading?: string
+    subheading?: string
+    image_url?: string
+    cta_text?: string
+  } | undefined
 
   const { data: products } = await supabase
     .from('products')
@@ -23,11 +38,22 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     .eq('is_active', true)
     .order('created_at', { ascending: false })
 
+  const accent = store.palette?.primary || '#171717'
+
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">{store.name}</h1>
-        <p className="text-[#737373] capitalize mt-1">{store.industry}</p>
+        {hero?.image_url && (
+          <div className="aspect-[21/9] rounded-2xl overflow-hidden bg-[#fafafa] mb-6">
+            <img src={hero.image_url} alt={store.name} className="w-full h-full object-cover" />
+          </div>
+        )}
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+          {hero?.heading || store.name}
+        </h1>
+        <p className="mt-1.5" style={{ color: hero?.subheading ? accent : undefined }}>
+          {hero?.subheading || <span className="text-[#737373] capitalize">{store.industry}</span>}
+        </p>
       </div>
 
       {(!products || products.length === 0) && (

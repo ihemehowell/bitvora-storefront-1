@@ -21,11 +21,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-display font-semibold tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-display font-semibold tracking-tight">
           {merchant?.full_name ? `Welcome back, ${merchant.full_name.split(' ')[0]}` : 'Your stores'}
         </h1>
-        <Link href="/stores/new">
+        <Link href="/stores/new" className="self-start sm:self-auto">
           <Button>+ New store</Button>
         </Link>
       </div>
@@ -49,13 +49,13 @@ export default async function DashboardPage() {
           {stores.map((store) => (
             <Link key={store.id} href={`/stores/${store.id}`}>
               <Card className="hover:border-indigo-600 transition-colors h-full">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-display font-medium text-lg">{store.name}</p>
-                    <p className="text-sm text-ink/50 font-mono">/{store.slug}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-display font-medium text-lg truncate">{store.name}</p>
+                    <p className="text-sm text-ink/50 font-mono truncate">/{store.slug}</p>
                   </div>
                   <span
-                    className={`text-xs rounded-full px-2.5 py-1 font-medium ${
+                    className={`shrink-0 text-xs rounded-full px-2.5 py-1 font-medium ${
                       store.is_published
                         ? 'bg-palm-50 text-palm-600'
                         : 'bg-sand-100 text-ink/50'
