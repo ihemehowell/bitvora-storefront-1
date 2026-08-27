@@ -29,7 +29,7 @@ export default async function StoreLayout({
   return (
     <div className="min-h-screen bg-white text-[#171717]" style={{ '--accent': accent } as React.CSSProperties}>
       <header className="border-b border-[#e5e5e5] bg-white sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href={`/${slug}`} className="flex items-center gap-2 font-semibold text-lg">
             {store.logo_url ? (
               <img src={store.logo_url} alt="" className="w-7 h-7 rounded-md object-cover" />
@@ -41,7 +41,7 @@ export default async function StoreLayout({
           <CartIcon slug={slug} />
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-6 py-10">{children}</main>
+      <main className="max-w-7xl mx-auto px-6 py-10">{children}</main>
       <footer className="max-w-5xl mx-auto px-6 py-8 text-center">
         <p className="text-xs text-[#a3a3a3]">Powered by Bitvora Storefront</p>
       </footer>

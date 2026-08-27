@@ -1,7 +1,7 @@
 
-import Link from 'next/link'
-import { PackageBox } from 'switch-icons'
 import { createClient } from '../../lib/supabase/server'
+import { PackageBox } from 'switch-icons'
+import { ProductCard } from './ProductCard'
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -42,18 +42,45 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
   return (
     <div>
-      <div className="mb-10">
-        {hero?.image_url && (
-          <div className="aspect-[21/9] rounded-2xl overflow-hidden bg-[#fafafa] mb-6">
-            <img src={hero.image_url} alt={store.name} className="w-full h-full object-cover" />
-          </div>
+      {/* Full-bleed hero */}
+      <div className="relative -mx-6 sm:-mx-6 mb-16 h-[420px] sm:h-[520px] overflow-hidden">
+        {hero?.image_url ? (
+          <img src={hero.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundColor: accent }} />
         )}
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-          {hero?.heading || store.name}
-        </h1>
-        <p className="mt-1.5" style={{ color: hero?.subheading ? accent : undefined }}>
-          {hero?.subheading || <span className="text-[#737373] capitalize">{store.industry}</span>}
-        </p>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+        <div className="relative h-full flex flex-col justify-center px-8 sm:px-16 max-w-xl">
+          <h1
+            className="text-4xl sm:text-6xl text-white leading-[1.05] mb-4"
+            style={{ fontFamily: 'var(--font-storefront-display)', fontWeight: 600 }}
+          >
+            {hero?.heading || store.name}
+          </h1>
+          {(hero?.subheading || !hero?.heading) && (
+            <p className="text-white/80 text-base sm:text-lg mb-6 max-w-md">
+              {hero?.subheading || `Shop ${store.name}'s ${store.industry} collection.`}
+            </p>
+          )}
+          <a
+            href="#products"
+            className="inline-block w-fit rounded-full px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: accent }}
+          >
+            {hero?.cta_text || 'Shop now'}
+          </a>
+        </div>
+      </div>
+
+      {/* Section header */}
+      <div id="products" className="text-center mb-10 scroll-mt-20">
+        <h2
+          className="text-2xl sm:text-3xl mb-2"
+          style={{ fontFamily: 'var(--font-storefront-display)', fontWeight: 600 }}
+        >
+          Shop the collection
+        </h2>
+        <p className="text-[#737373] text-sm">Handpicked pieces, made with care.</p>
       </div>
 
       {(!products || products.length === 0) && (
@@ -65,30 +92,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
         {products?.map((product) => (
-          <Link key={product.id} href={`/${slug}/product/${product.slug}`} className="group">
-            <div className="aspect-square rounded-xl overflow-hidden bg-[#fafafa] mb-2.5 relative">
-              {product.images?.[0] ? (
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <PackageBox className="w-8 h-8 text-[#d4d4d4]" />
-                </div>
-              )}
-              {product.stock_quantity === 0 && (
-                <span className="absolute top-2 left-2 bg-white/90 text-red-600 text-xs font-medium rounded-full px-2 py-1">
-                  Out of stock
-                </span>
-              )}
-            </div>
-            <p className="font-medium text-sm leading-tight">{product.name}</p>
-            <p className="text-sm text-[#525252] font-mono mt-0.5">
-              ₦{Number(product.price).toLocaleString()}
-            </p>
-          </Link>
+          <ProductCard key={product.id} product={product} storeSlug={slug} accent={accent} />
         ))}
       </div>
     </div>
