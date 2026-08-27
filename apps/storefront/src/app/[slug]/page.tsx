@@ -31,6 +31,20 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     cta_text?: string
   } | undefined
 
+  const { data: ctaSection } = await supabase
+  .from('sections')
+  .select('config')
+  .eq('store_id', store.id)
+  .eq('type', 'cta_banner')
+  .eq('is_visible', true)
+  .maybeSingle()
+
+const ctaBanner = ctaSection?.config as {
+  heading?: string
+  image_url?: string
+  cta_text?: string
+} | undefined
+
   const { data: products } = await supabase
     .from('products')
     .select('*')
@@ -95,6 +109,32 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           <ProductCard key={product.id} product={product} storeSlug={slug} accent={accent} />
         ))}
       </div>
+
+      {ctaBanner?.heading && (
+  <div className="relative -mx-6 mt-16 h-[280px] sm:h-[340px] overflow-hidden">
+    {ctaBanner.image_url ? (
+      <img src={ctaBanner.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+    ) : (
+      <div className="absolute inset-0" style={{ backgroundColor: accent }} />
+    )}
+    <div className="absolute inset-0 bg-black/40" />
+    <div className="relative h-full flex flex-col items-center justify-center text-center px-8">
+      <h2
+        className="text-2xl sm:text-4xl text-white leading-tight mb-6 max-w-lg"
+        style={{ fontFamily: 'var(--font-storefront-display)', fontWeight: 600 }}
+      >
+        {ctaBanner.heading}
+      </h2>
+      <a
+        href="#products"
+        className="inline-block rounded-full px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+        style={{ backgroundColor: accent }}
+      >
+        {ctaBanner.cta_text || 'Shop now'}
+      </a>
+    </div>
+  </div>
+)}
     </div>
   )
 }

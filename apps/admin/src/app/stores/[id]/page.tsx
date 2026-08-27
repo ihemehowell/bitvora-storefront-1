@@ -7,6 +7,7 @@ import { BrandColorPicker } from './BrandColorPicker'
 import { StoreContentForm } from './StoreContentForm'
 import { Card } from '@bitvora/ui/src/Card'
 import { PackageBox } from 'switch-icons'
+import { CtaBannerForm } from './CtaBannerForm'
 
 export default async function StoreDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -22,12 +23,28 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
     .eq('type', 'hero')
     .maybeSingle()
 
+    
+
   const heroConfig = heroSection?.config as {
     heading?: string
     subheading?: string
     image_url?: string
     cta_text?: string
   } | undefined
+
+
+  const { data: ctaSection } = await supabase
+  .from('sections')
+  .select('config')
+  .eq('store_id', id)
+  .eq('type', 'cta_banner')
+  .maybeSingle()
+
+const ctaConfig = ctaSection?.config as {
+  heading?: string
+  image_url?: string
+  cta_text?: string
+} | undefined
 
   return (
     <div className="max-w-2xl">
@@ -59,6 +76,16 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
           initialCtaText={heroConfig?.cta_text || ''}
         />
       </Card>
+      
+      <Card className="mb-4">
+      <p className="text-sm font-medium mb-3">Closing banner</p>
+      <CtaBannerForm
+        storeId={store.id}
+        initialHeading={ctaConfig?.heading || ''}
+        initialImageUrl={ctaConfig?.image_url || ''}
+        initialCtaText={ctaConfig?.cta_text || ''}
+      />
+    </Card>
 
       <Link href={`/stores/${store.id}/products`}>
         <Card className="hover:border-indigo-600 transition-colors flex items-center gap-3">

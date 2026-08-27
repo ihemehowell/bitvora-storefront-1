@@ -73,3 +73,36 @@ export async function upsertHeroSection(storeId: string, formData: FormData) {
 
   revalidatePath(`/stores/${storeId}`)
 }
+
+export async function upsertCtaBannerSection(storeId: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const heading = formData.get('heading') as string
+  const imageUrl = formData.get('image_url') as string
+  const ctaText = formData.get('cta_text') as string
+
+  const { data: existing } = await supabase
+    .from('sections')
+    .select('id')
+    .eq('store_id', storeId)
+    .eq('type', 'cta_banner')
+    .maybeSingle()
+
+  const config = {
+    heading,
+    image_url: imageUrl || null,
+    cta_text: ctaText || 'Shop now',
+  }
+
+  if (existing) {
+    const { error } = await supabase.from('sections').update({ config }).eq('id', existing.id)
+    if (error) return { error: error.message }
+  } else {
+    const { error } = await supabase
+      .from('sections')
+      .insert({ store_id: storeId, type: 'cta_banner', position: 10, config, is_visible: true })
+    if (error) return { error: error.message }
+  }
+
+  revalidatePath(`/stores/${storeId}`)
+}
