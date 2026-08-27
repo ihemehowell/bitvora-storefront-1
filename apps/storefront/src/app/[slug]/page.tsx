@@ -31,6 +31,16 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     cta_text?: string
   } | undefined
 
+  const { data: bannerGridSection } = await supabase
+  .from('sections')
+  .select('config')
+  .eq('store_id', store.id)
+  .eq('type', 'banner_grid')
+  .eq('is_visible', true)
+  .maybeSingle()
+
+const bannerGrid = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles?.filter((t) => t.heading) || []
+
   const { data: ctaSection } = await supabase
   .from('sections')
   .select('config')
@@ -86,6 +96,35 @@ const ctaBanner = ctaSection?.config as {
         </div>
       </div>
 
+      {bannerGrid.length > 0 && (
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16">
+    {bannerGrid.map((tile, i) => (
+      <div key={i} className="relative h-[280px] rounded-2xl overflow-hidden">
+        {tile.image_url ? (
+          <img src={tile.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundColor: accent }} />
+        )}
+        <div className="absolute inset-0 bg-black/35" />
+        <div className="relative h-full flex flex-col justify-end p-5">
+          <p
+            className="text-white text-xl mb-3 leading-tight"
+            style={{ fontFamily: 'var(--font-storefront-display)', fontWeight: 600 }}
+          >
+            {tile.heading}
+          </p>
+          <a
+            href="#products"
+            className="inline-block w-fit rounded-full bg-white text-[#171717] px-4 py-2 text-xs font-medium hover:opacity-90 transition-opacity"
+          >
+            {tile.cta_text || 'Shop now'}
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
       {/* Section header */}
       <div id="products" className="text-center mb-10 scroll-mt-20">
         <h2
@@ -120,8 +159,8 @@ const ctaBanner = ctaSection?.config as {
     <div className="absolute inset-0 bg-black/40" />
     <div className="relative h-full flex flex-col items-center justify-center text-center px-8">
       <h2
-        className="text-2xl sm:text-4xl text-white leading-tight mb-6 max-w-lg"
-        style={{ fontFamily: 'var(--font-storefront-display)', fontWeight: 600 }}
+        className="text-5xl text-white capitalize leading-snug mb-6 max-w-4xl font-bold"
+        style={{ fontFamily: 'var(--font-storefront-display)' }}
       >
         {ctaBanner.heading}
       </h2>

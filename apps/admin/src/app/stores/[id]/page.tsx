@@ -8,6 +8,7 @@ import { StoreContentForm } from './StoreContentForm'
 import { Card } from '@bitvora/ui/src/Card'
 import { PackageBox } from 'switch-icons'
 import { CtaBannerForm } from './CtaBannerForm'
+import { BannerGridForm } from './BannerGridForm'
 
 export default async function StoreDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -46,6 +47,15 @@ const ctaConfig = ctaSection?.config as {
   cta_text?: string
 } | undefined
 
+const { data: bannerGridSection } = await supabase
+  .from('sections')
+  .select('config')
+  .eq('store_id', id)
+  .eq('type', 'banner_grid')
+  .maybeSingle()
+
+const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles || []
+
   return (
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-1">
@@ -76,7 +86,12 @@ const ctaConfig = ctaSection?.config as {
           initialCtaText={heroConfig?.cta_text || ''}
         />
       </Card>
-      
+
+      <Card className="mb-4">
+      <p className="text-sm font-medium mb-3">Featured collections (3 tiles)</p>
+      <BannerGridForm storeId={store.id} initialTiles={bannerGridTiles} />
+    </Card>
+
       <Card className="mb-4">
       <p className="text-sm font-medium mb-3">Closing banner</p>
       <CtaBannerForm

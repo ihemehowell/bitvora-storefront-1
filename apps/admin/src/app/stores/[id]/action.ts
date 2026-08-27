@@ -106,3 +106,34 @@ export async function upsertCtaBannerSection(storeId: string, formData: FormData
 
   revalidatePath(`/stores/${storeId}`)
 }
+
+export async function upsertBannerGridSection(storeId: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const tiles = [1, 2, 3].map((n) => ({
+    heading: formData.get(`tile${n}_heading`) as string,
+    image_url: (formData.get(`tile${n}_image`) as string) || null,
+    cta_text: (formData.get(`tile${n}_cta`) as string) || 'Shop now',
+  }))
+
+  const { data: existing } = await supabase
+    .from('sections')
+    .select('id')
+    .eq('store_id', storeId)
+    .eq('type', 'banner_grid')
+    .maybeSingle()
+
+  const config = { tiles }
+
+  if (existing) {
+    const { error } = await supabase.from('sections').update({ config }).eq('id', existing.id)
+    if (error) return { error: error.message }
+  } else {
+    const { error } = await supabase
+      .from('sections')
+      .insert({ store_id: storeId, type: 'banner_grid', position: 1, config, is_visible: true })
+    if (error) return { error: error.message }
+  }
+
+  revalidatePath(`/stores/${storeId}`)
+}
