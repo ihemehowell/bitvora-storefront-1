@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { BrandColorPicker } from '../BrandColorPicker'
 import { Button } from '@bitvora/ui/src/Button'
 import { Storefront, Check } from 'switch-icons'
+import { IconThumbUpFilled } from '@tabler/icons-react'
 
 export function SetupWizard({
   storeId,
@@ -31,7 +32,11 @@ export function SetupWizard({
           <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-4">
             <Storefront className="w-6 h-6 text-indigo-600" />
           </div>
-          <h1 className="text-2xl font-display font-semibold mb-1">{storeName} is created 🎉</h1>
+          <span className="flex gap-5 items-center">
+          <h1 className="text-2xl font-display font-semibold mb-1">{storeName} is created 
+          </h1>
+          <IconThumbUpFilled className='w-6 h-6 text-amber-600'/>
+          </span>
           <p className="text-ink/50 text-sm mb-6">
             Pick a brand color — this is what customers see on your storefront.
           </p>
