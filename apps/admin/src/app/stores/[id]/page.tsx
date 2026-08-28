@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { PublishToggle } from './PublishToggle'
 import { BrandColorPicker } from './BrandColorPicker'
 import { StoreContentForm } from './StoreContentForm'
+import { BannerGridForm } from './BannerGridForm'
+import { CtaBannerForm } from './CtaBannerForm'
+import { OnboardingChecklist } from './OnboardingChecklist'
 import { Card } from '@bitvora/ui/src/Card'
 import { PackageBox } from 'switch-icons'
-import { CtaBannerForm } from './CtaBannerForm'
-import { BannerGridForm } from './BannerGridForm'
 
 export default async function StoreDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -17,6 +18,11 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
   const { data: store, error } = await supabase.from('stores').select('*').eq('id', id).single()
   if (error || !store) notFound()
 
+  const { count: productCount } = await supabase
+    .from('products')
+    .select('id', { count: 'exact', head: true })
+    .eq('store_id', id)
+
   const { data: heroSection } = await supabase
     .from('sections')
     .select('config')
@@ -24,7 +30,19 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
     .eq('type', 'hero')
     .maybeSingle()
 
-    
+  const { data: bannerGridSection } = await supabase
+    .from('sections')
+    .select('config')
+    .eq('store_id', id)
+    .eq('type', 'banner_grid')
+    .maybeSingle()
+
+  const { data: ctaSection } = await supabase
+    .from('sections')
+    .select('config')
+    .eq('store_id', id)
+    .eq('type', 'cta_banner')
+    .maybeSingle()
 
   const heroConfig = heroSection?.config as {
     heading?: string
@@ -33,28 +51,20 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
     cta_text?: string
   } | undefined
 
+  const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles || []
 
-  const { data: ctaSection } = await supabase
-  .from('sections')
-  .select('config')
-  .eq('store_id', id)
-  .eq('type', 'cta_banner')
-  .maybeSingle()
+  const ctaConfig = ctaSection?.config as {
+    heading?: string
+    image_url?: string
+    cta_text?: string
+  } | undefined
 
-const ctaConfig = ctaSection?.config as {
-  heading?: string
-  image_url?: string
-  cta_text?: string
-} | undefined
-
-const { data: bannerGridSection } = await supabase
-  .from('sections')
-  .select('config')
-  .eq('store_id', id)
-  .eq('type', 'banner_grid')
-  .maybeSingle()
-
-const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles || []
+  const checklistItems = [
+    { label: 'Set your brand color', done: !!store.palette?.primary },
+    { label: 'Add at least one product', done: (productCount ?? 0) > 0, href: `/stores/${id}/products/new` },
+    { label: 'Set up your homepage hero', done: !!heroSection },
+    { label: 'Publish your store', done: store.is_published },
+  ]
 
   return (
     <div className="max-w-2xl">
@@ -63,6 +73,8 @@ const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: strin
         <PublishToggle storeId={store.id} isPublished={store.is_published} />
       </div>
       <p className="text-ink/50 font-mono text-sm mb-6">/{store.slug} · {store.industry}</p>
+
+      {!store.is_published && <OnboardingChecklist items={checklistItems} />}
 
       <Card className={`mb-4 ${store.is_published ? 'bg-palm-50 border-palm-600/20' : ''}`}>
         <p className={`text-sm ${store.is_published ? 'text-palm-600' : 'text-ink/60'}`}>
@@ -88,19 +100,19 @@ const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: strin
       </Card>
 
       <Card className="mb-4">
-      <p className="text-sm font-medium mb-3">Featured collections (3 tiles)</p>
-      <BannerGridForm storeId={store.id} initialTiles={bannerGridTiles} />
-    </Card>
+        <p className="text-sm font-medium mb-3">Featured collections (3 tiles)</p>
+        <BannerGridForm storeId={store.id} initialTiles={bannerGridTiles} />
+      </Card>
 
       <Card className="mb-4">
-      <p className="text-sm font-medium mb-3">Closing banner</p>
-      <CtaBannerForm
-        storeId={store.id}
-        initialHeading={ctaConfig?.heading || ''}
-        initialImageUrl={ctaConfig?.image_url || ''}
-        initialCtaText={ctaConfig?.cta_text || ''}
-      />
-    </Card>
+        <p className="text-sm font-medium mb-3">Closing banner</p>
+        <CtaBannerForm
+          storeId={store.id}
+          initialHeading={ctaConfig?.heading || ''}
+          initialImageUrl={ctaConfig?.image_url || ''}
+          initialCtaText={ctaConfig?.cta_text || ''}
+        />
+      </Card>
 
       <Link href={`/stores/${store.id}/products`}>
         <Card className="hover:border-indigo-600 transition-colors flex items-center gap-3">

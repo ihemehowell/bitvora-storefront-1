@@ -156,7 +156,7 @@ const ctaBanner = ctaSection?.config as {
     ) : (
       <div className="absolute inset-0" style={{ backgroundColor: accent }} />
     )}
-    <div className="absolute inset-0 bg-black/40" />
+    <div className="absolute inset-0 bg-black/50" />
     <div className="relative h-full flex flex-col items-center justify-center text-center px-8">
       <h2
         className="text-5xl text-white capitalize leading-snug mb-6 max-w-4xl font-bold"

@@ -70,5 +70,5 @@ export async function createStore(prevState: { error?: string } | undefined, for
     return { error: storeError.message }
   }
 
-  redirect(`/stores/${store.id}`)
+redirect(`/stores/${store.id}/setup`)
 }
