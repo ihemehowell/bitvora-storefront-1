@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Plus, Grid, PackageBox, Storefront, Receipt } from 'switch-icons'
-import { IconX } from '@tabler/icons-react'
+import { IconX, IconPalette } from '@tabler/icons-react'
 import { LogoutButton } from './LogoutButton'
 
 export function Sidebar({
@@ -93,6 +93,10 @@ export function Sidebar({
               <Link href={`/stores/${storeId}/orders`} onClick={onClose} className={linkClass(isActive(`/stores/${storeId}/orders`))}>
                 <Receipt className="w-4 h-4 shrink-0" />
                 Orders
+              </Link>
+              <Link href={`/stores/${storeId}/customize`} onClick={onClose} className={linkClass(isActive(`/stores/${storeId}/customize`))}>
+                <IconPalette className="w-4 h-4 shrink-0" stroke={1.75} />
+                Customize
               </Link>
             </div>
           )}

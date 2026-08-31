@@ -1,19 +1,19 @@
-import { Nav } from '@/components/Nav'
-import { Hero } from '@/components/Hero'
-import { FeaturesGrid } from '@/components/FeaturesGrid'
-import { HowItWorks } from '@/components/HowItWorks'
-import { CtaBand } from '@/components/CtaBand'
-import { Footer } from '@/components/Footer'
+import { BentoFeatures } from "@/components/BentoFeatures";
+import { CtaBand, Footer } from "@/components/CtaBandAndFooter";
+import { Hero } from "@/components/Hero";
+import { Nav } from "@/components/Nav";
+import { Steps } from "@/components/Steps";
+
 
 export default function HomePage() {
   return (
-    <>
+    <main className="bg-paper text-ink">
       <Nav />
       <Hero />
-      <FeaturesGrid />
-      <HowItWorks />
+      <BentoFeatures />
+      <Steps />
       <CtaBand />
       <Footer />
-    </>
-  )
+    </main>
+  );
 }

@@ -1,15 +1,14 @@
-
 import { createClient } from '../../../lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { PublishToggle } from './PublishToggle'
-import { BrandColorPicker } from './BrandColorPicker'
-import { StoreContentForm } from './StoreContentForm'
-import { BannerGridForm } from './BannerGridForm'
-import { CtaBannerForm } from './CtaBannerForm'
-import { OnboardingChecklist } from './OnboardingChecklist'
-import { Card } from '@bitvora/ui/src/Card'
-import { PackageBox } from 'switch-icons'
+
+import { OnboardingProgress } from './OnboardingProgress'
+import { RecentOrders } from './RecentOrders'
+import { TopProducts } from './TopProducts'
+import { KpiCard } from '@bitvora/ui/src/KpiCard'
+import { computeTrend } from './computeTrend'
+
+const STOREFRONT_URL = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001'
 
 export default async function StoreDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -25,106 +24,130 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
 
   const { data: heroSection } = await supabase
     .from('sections')
-    .select('config')
+    .select('id')
     .eq('store_id', id)
     .eq('type', 'hero')
     .maybeSingle()
 
-  const { data: bannerGridSection } = await supabase
-    .from('sections')
-    .select('config')
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('id, customer_name, total, status, created_at')
     .eq('store_id', id)
-    .eq('type', 'banner_grid')
-    .maybeSingle()
+    .order('created_at', { ascending: false })
 
-  const { data: ctaSection } = await supabase
-    .from('sections')
-    .select('config')
-    .eq('store_id', id)
-    .eq('type', 'cta_banner')
-    .maybeSingle()
+  const { data: orderItems } = await supabase
+    .from('order_items')
+    .select('product_name, quantity, orders!inner(store_id)')
+    .eq('orders.store_id', id)
 
-  const heroConfig = heroSection?.config as {
-    heading?: string
-    subheading?: string
-    image_url?: string
-    cta_text?: string
-  } | undefined
+  const allOrders = orders ?? []
+  const activeOrders = allOrders.filter((o) => o.status !== 'cancelled')
 
-  const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles || []
+  const startOfToday = new Date()
+  startOfToday.setHours(0, 0, 0, 0)
+  const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000)
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
 
-  const ctaConfig = ctaSection?.config as {
-    heading?: string
-    image_url?: string
-    cta_text?: string
-  } | undefined
+  const ordersToday = allOrders.filter((o) => new Date(o.created_at) >= startOfToday).length
+  const ordersYesterday = allOrders.filter((o) => {
+    const t = new Date(o.created_at)
+    return t >= startOfYesterday && t < startOfToday
+  }).length
+
+  const revenueThisWeek = activeOrders
+    .filter((o) => new Date(o.created_at) >= sevenDaysAgo)
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  const revenueLastWeek = activeOrders
+    .filter((o) => {
+      const t = new Date(o.created_at)
+      return t >= fourteenDaysAgo && t < sevenDaysAgo
+    })
+    .reduce((sum, o) => sum + Number(o.total), 0)
+
+  const pendingCount = allOrders.filter((o) => o.status === 'pending').length
+  const avgOrderValue = activeOrders.length
+    ? activeOrders.reduce((sum, o) => sum + Number(o.total), 0) / activeOrders.length
+    : 0
+
+  const ordersTrend = computeTrend(ordersToday, ordersYesterday, 'vs yesterday')
+  const revenueTrend = computeTrend(revenueThisWeek, revenueLastWeek, 'vs last week')
+
+  const productTotals = new Map<string, number>()
+  for (const item of orderItems ?? []) {
+    productTotals.set(item.product_name, (productTotals.get(item.product_name) ?? 0) + item.quantity)
+  }
+  const topProducts = [...productTotals.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([name, unitsSold]) => ({ name, unitsSold }))
 
   const checklistItems = [
-    { label: 'Set your brand color', done: !!store.palette?.primary },
+    { label: 'Set your brand color', done: !!store.palette?.primary, href: `/stores/${id}/customize` },
     { label: 'Add at least one product', done: (productCount ?? 0) > 0, href: `/stores/${id}/products/new` },
-    { label: 'Set up your homepage hero', done: !!heroSection },
+    { label: 'Set up your homepage hero', done: !!heroSection, href: `/stores/${id}/customize` },
     { label: 'Publish your store', done: store.is_published },
   ]
 
   return (
-    <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-1">
+    <div className="max-w-5xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
         <h1 className="text-2xl font-display font-semibold">{store.name}</h1>
-        <PublishToggle storeId={store.id} isPublished={store.is_published} />
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href={`${STOREFRONT_URL}/${store.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm rounded-md px-3 py-1.5 font-medium bg-sand-100 text-ink/70 hover:bg-sand-200 transition-colors"
+          >
+            View store ↗
+          </a>
+          <Link
+            href={`/stores/${store.id}/products/new`}
+            className="text-sm rounded-md px-3 py-1.5 font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+          >
+            Add product
+          </Link>
+        </div>
       </div>
-      <p className="text-ink/50 font-mono text-sm mb-6">/{store.slug} · {store.industry}</p>
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <span className="text-xs font-mono text-ink/60 bg-sand-100 rounded-full px-2.5 py-1">/{store.slug}</span>
+        <span className="text-xs font-medium text-ink/60 bg-sand-100 rounded-full px-2.5 py-1 capitalize">{store.industry}</span>
+        {store.is_published && (
+          <span className="flex items-center gap-1.5 text-xs font-medium text-palm-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-palm-600" /> Live
+          </span>
+        )}
+      </div>
 
-      {!store.is_published && <OnboardingChecklist items={checklistItems} />}
+      <OnboardingProgress storeId={store.id} items={checklistItems} />
 
-      <Card className={`mb-4 ${store.is_published ? 'bg-palm-50 border-palm-600/20' : ''}`}>
-        <p className={`text-sm ${store.is_published ? 'text-palm-600' : 'text-ink/60'}`}>
-          {store.is_published
-            ? 'Your store is live and visible to customers.'
-            : 'Your store is a draft. Publish it once you have added products.'}
-        </p>
-      </Card>
-
-      <Card className="mb-4">
-        <BrandColorPicker storeId={store.id} initialColor={store.palette?.primary || '#171717'} />
-      </Card>
-
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Homepage hero</p>
-        <StoreContentForm
-          storeId={store.id}
-          initialHeading={heroConfig?.heading || ''}
-          initialSubheading={heroConfig?.subheading || ''}
-          initialImageUrl={heroConfig?.image_url || ''}
-          initialCtaText={heroConfig?.cta_text || ''}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <KpiCard
+          label="Orders today"
+          value={String(ordersToday)}
+          trendLabel={ordersTrend.label}
+          trend={ordersTrend.trend}
         />
-      </Card>
-
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Featured collections (3 tiles)</p>
-        <BannerGridForm storeId={store.id} initialTiles={bannerGridTiles} />
-      </Card>
-
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Closing banner</p>
-        <CtaBannerForm
-          storeId={store.id}
-          initialHeading={ctaConfig?.heading || ''}
-          initialImageUrl={ctaConfig?.image_url || ''}
-          initialCtaText={ctaConfig?.cta_text || ''}
+        <KpiCard
+          label="Revenue this week"
+          value={`₦${revenueThisWeek.toLocaleString()}`}
+          trendLabel={revenueTrend.label}
+          trend={revenueTrend.trend}
         />
-      </Card>
+        <KpiCard
+          label="Pending orders"
+          value={String(pendingCount)}
+          trendLabel={pendingCount > 0 ? 'Needs attention' : undefined}
+          trend={pendingCount > 0 ? 'down' : 'flat'}
+        />
+        <KpiCard label="Avg. order value" value={`₦${Math.round(avgOrderValue).toLocaleString()}`} />
+      </div>
 
-      <Link href={`/stores/${store.id}/products`}>
-        <Card className="hover:border-indigo-600 transition-colors flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
-            <PackageBox className="w-5 h-5 text-indigo-600" />
-          </div>
-          <div>
-            <p className="font-medium">Manage products</p>
-            <p className="text-sm text-ink/50">Add, edit, and organize what you sell</p>
-          </div>
-        </Card>
-      </Link>
+      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
+        <RecentOrders storeId={store.id} orders={allOrders.slice(0, 5)} />
+        <TopProducts products={topProducts} />
+      </div>
     </div>
   )
 }

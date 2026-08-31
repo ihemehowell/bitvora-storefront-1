@@ -19,8 +19,8 @@ export function PublishToggle({ storeId, isPublished }: { storeId: string; isPub
       disabled={isPending}
       className={`text-sm rounded-md px-3 py-1.5 font-medium transition-colors ${
         isPublished
-          ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          : 'bg-brand-600 text-white hover:bg-brand-700'
+          ? 'bg-sand-100 text-ink/70 hover:bg-sand-200'
+          : 'bg-indigo-600 text-white hover:bg-indigo-700'
       } disabled:opacity-50`}
     >
       {isPending ? 'Updating...' : isPublished ? 'Unpublish' : 'Publish store'}
