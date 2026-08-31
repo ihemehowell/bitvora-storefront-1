@@ -65,9 +65,9 @@ export function Hero() {
           </div>
 
           <div className="flex max-w-[480px] gap-7 border-t border-paper/15 pt-6">
-            <Stat value="3,200+" label="stores launched" />
-            <Stat value="₦180M+" label="in orders processed" />
-            <Stat value="4.8 / 5" label="merchant rating" />
+            <Stat value="0" label="stores launched" />
+            <Stat value="0" label="in orders processed" />
+            <Stat value="0 / 5" label="merchant rating" />
           </div>
         </div>
 
