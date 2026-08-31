@@ -3,21 +3,28 @@
 @theme {
   --color-paper: #faf7f1;
   --color-ink: #1e1b16;
+  --color-paper-dim: #EFE7D6;
+  --color-ink-soft: #5B5346;
 
   --color-indigo-900: #1b2456;
+   --color-indigo-950: #12183A;
+ 
   --color-indigo-700: #22307a;
   --color-indigo-600: #2a3b8f;
   --color-indigo-50: #eef0fa;
 
+  --color-marigold-400: #EDB05E;
   --color-marigold-500: #e8a33d;
   --color-marigold-50: #fdf3e3;
 
   --color-palm-600: #3f7d5c;
   --color-palm-50: #eaf4ee;
 
-  --color-pepper-600: #c1443b;
+  --color-pepper-600: #A73A3F;
   --color-pepper-50: #fbeceb;
 
+  --color-sand-300: #D9CBAE;
+  --color-sand-400: #CBB98F;
   --color-sand-200: #e7e1d6;
   --color-sand-100: #f2eee5;
 
