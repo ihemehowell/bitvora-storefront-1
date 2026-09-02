@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { IconBuildingStore } from "@tabler/icons-react";
 import { AdireStrip } from "./AdireStrip";
+import Image from "next/image";
 
 export function CtaBand() {
   return (
@@ -36,10 +37,18 @@ export function CtaBand() {
 export function Footer() {
   return (
     <footer className="mx-auto flex max-w-[1240px] flex-col items-center gap-2.5 px-8 py-10 text-[13px] text-ink-soft md:flex-row md:justify-between">
+      <div className="flex items-center gap-2.5">
+      <Image
+        src="/brand/icon-light-bg.svg"
+        alt="Bitvora Logo"
+        width={120}
+        height={30}
+        className="h-7 w-auto"
+      />
       <span className="flex items-center gap-1.5">
-        <IconBuildingStore size={15} /> Bitvora Storefront — a Bitvoratech
-        product
+         Bitvora Storefront — a Bitvoratech product
       </span>
+      </div>
       <span>© 2026 Bitvoratech. All rights reserved.</span>
     </footer>
   );

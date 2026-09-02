@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AdireStrip } from "./AdireStrip";
+import Image from "next/image";
 
 const SWATCHES = [
   { name: "pepper", hex: "#A73A3F" },
@@ -72,9 +73,23 @@ export function Hero() {
         </div>
 
         {/* Visual: real dashboard mockup + floating WhatsApp order */}
-        <div className="relative h-[400px] md:h-[520px]">
+          <div className="relative h-full md:h-[520px]">
+  {/* Decorative blob background */}
+          <svg
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute -top-27 -right-42 w-[550px] md:w-[750px] opacity-[0.15] pointer-events-none"
+            aria-hidden
+          >
+            <path
+              fill="#E7A038"
+              d="M39.8,-68.9C53.2,-61.1,67.1,-53.9,76.4,-42.5C85.7,-31.2,90.4,-15.6,87.8,-1.5C85.1,12.5,75.1,25,66.6,37.9C58.2,50.7,51.3,63.8,40.5,73.4C29.6,82.9,14.8,88.8,0.3,88.3C-14.3,87.9,-28.6,81.1,-40,71.9C-51.3,62.6,-59.7,51,-65.5,38.6C-71.2,26.2,-74.3,13.1,-75.4,-0.6C-76.4,-14.3,-75.4,-28.7,-69.7,-41C-63.9,-53.4,-53.4,-63.8,-41,-72.3C-28.6,-80.7,-14.3,-87.3,-0.6,-86.3C13.1,-85.3,26.3,-76.8,39.8,-68.9Z"
+              transform="translate(100 100)"
+            />
+          </svg>
+
           <div className="absolute right-0 top-0 w-[300px] rotate-[2.5deg] overflow-hidden rounded-2xl bg-paper shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] md:w-[420px]">
-            <div className="flex items-center gap-1.5 border-b border-sand-300 bg-paper-dim px-3.5 py-2.5">
+          <div className="flex items-center gap-1.5 border-b border-sand-300 bg-paper-dim px-3.5 py-2.5">
               <span className="h-2 w-2 rounded-full bg-sand-400" />
               <span className="h-2 w-2 rounded-full bg-sand-400" />
               <span className="h-2 w-2 rounded-full bg-sand-400" />

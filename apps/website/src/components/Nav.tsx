@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Storefront } from 'switch-icons'
 
 export function Nav() {
@@ -5,11 +6,18 @@ export function Nav() {
     <header className="border-b border-sand-200">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Storefront className="w-5 h-5 text-marigold-500" />
-          <div className="leading-none">
-            <p className="font-display font-semibold text-base">Bitvora</p>
-            <p className="font-display text-xs text-ink/50">Storefront</p>
+          <div className="flex items-center gap-2">
+           <Image
+              src="/brand/icon-light-bg.svg"
+              alt="Bitvora Logo"
+              width={120}
+              height={30}
+              className="h-7 w-auto"
+            />
+            <span className="font-display font-semibold text-base">Bitvora</span>
+            <span className="font-display font-semibold text-base">Storefront</span>
           </div>
+          
         </div>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-ink/60">
           <a href="#features" className="hover:text-ink transition-colors">Features</a>

@@ -1,12 +1,14 @@
-
 import { createClient } from '../../../../lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { BrandColorPicker } from '../BrandColorPicker'
-import { StoreContentForm } from '../StoreContentForm'
-import { BannerGridForm } from '../BannerGridForm'
-import { CtaBannerForm } from '../CtaBannerForm'
-import { Card } from '@bitvora/ui/src/Card'
 import { PublishToggle } from '../PublishToggle'
+import { CustomizeWorkspace } from './CustomizeWorkspace'
+
+const SECTION_LABELS: Record<string, string> = {
+  hero: 'Homepage hero',
+  about: 'About section',
+  banner_grid: 'Featured collections',
+  cta_banner: 'Closing banner',
+}
 
 export default async function CustomizePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -15,83 +17,56 @@ export default async function CustomizePage({ params }: { params: Promise<{ id: 
   const { data: store, error } = await supabase.from('stores').select('*').eq('id', id).single()
   if (error || !store) notFound()
 
-  const { data: heroSection } = await supabase
-    .from('sections')
-    .select('config')
-    .eq('store_id', id)
-    .eq('type', 'hero')
-    .maybeSingle()
+  const { data: allSections } = await supabase
+    .from('sections').select('type, config, is_visible, position').eq('store_id', id).order('position')
 
-  const { data: bannerGridSection } = await supabase
-    .from('sections')
-    .select('config')
-    .eq('store_id', id)
-    .eq('type', 'banner_grid')
-    .maybeSingle()
+  const heroSection = allSections?.find((s) => s.type === 'hero')
+  const bannerGridSection = allSections?.find((s) => s.type === 'banner_grid')
+  const ctaSection = allSections?.find((s) => s.type === 'cta_banner')
+  const aboutSection = allSections?.find((s) => s.type === 'about')
 
-  const { data: ctaSection } = await supabase
-    .from('sections')
-    .select('config')
-    .eq('store_id', id)
-    .eq('type', 'cta_banner')
-    .maybeSingle()
-
-  const heroConfig = heroSection?.config as {
-    heading?: string
-    subheading?: string
-    image_url?: string
-    cta_text?: string
-  } | undefined
-
+  const heroConfig = (heroSection?.config as { heading?: string; subheading?: string; image_url?: string; cta_text?: string }) || {}
   const bannerGridTiles = (bannerGridSection?.config as { tiles?: { heading: string; image_url: string; cta_text: string }[] })?.tiles || []
+  const ctaConfig = (ctaSection?.config as { heading?: string; image_url?: string; cta_text?: string }) || {}
+  const aboutConfig = (aboutSection?.config as { heading?: string; body?: string }) || {}
 
-  const ctaConfig = ctaSection?.config as {
-    heading?: string
-    image_url?: string
-    cta_text?: string
-  } | undefined
+  const sectionsMeta = (allSections || [])
+    .filter((s) => SECTION_LABELS[s.type])
+    .map((s) => ({ type: s.type, label: SECTION_LABELS[s.type], is_visible: s.is_visible, position: s.position }))
 
   return (
     <div className="max-w-5xl">
-      <div className='flex  justify-between items-center'>
-      <div className="">
-        <h1 className="text-2xl font-display font-semibold mb-1">Customize</h1>
-      <p className="text-ink/50 text-sm mb-6">
-        Brand color and homepage content for {store.name}.
-      </p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-display font-semibold mb-1">Customize</h1>
+          <p className="text-ink/50 text-sm">Brand color and homepage content for {store.name}.</p>
+        </div>
+        <PublishToggle storeId={store.id} isPublished={store.is_published} />
       </div>
-      
-      <PublishToggle storeId={store.id} isPublished={store.is_published} />
-      </div>
-      <Card className="mb-4">
-        <BrandColorPicker storeId={store.id} initialColor={store.palette?.primary || '#171717'} />
-      </Card>
 
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Homepage hero</p>
-        <StoreContentForm
-          storeId={store.id}
-          initialHeading={heroConfig?.heading || ''}
-          initialSubheading={heroConfig?.subheading || ''}
-          initialImageUrl={heroConfig?.image_url || ''}
-          initialCtaText={heroConfig?.cta_text || ''}
-        />
-      </Card>
-
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Featured collections (3 tiles)</p>
-        <BannerGridForm storeId={store.id} initialTiles={bannerGridTiles} />
-      </Card>
-
-      <Card className="mb-4">
-        <p className="text-sm font-medium mb-3">Closing banner</p>
-        <CtaBannerForm
-          storeId={store.id}
-          initialHeading={ctaConfig?.heading || ''}
-          initialImageUrl={ctaConfig?.image_url || ''}
-          initialCtaText={ctaConfig?.cta_text || ''}
-        />
-      </Card>
+      <CustomizeWorkspace
+        storeId={store.id}
+        storeName={store.name}
+        initialColor={store.palette?.primary || '#171717'}
+        initialHero={{
+          heading: heroConfig.heading || '',
+          subheading: heroConfig.subheading || '',
+          image_url: heroConfig.image_url || '',
+          cta_text: heroConfig.cta_text || '',
+        }}
+        initialTiles={bannerGridTiles}
+        initialCta={{
+          heading: ctaConfig.heading || '',
+          image_url: ctaConfig.image_url || '',
+          cta_text: ctaConfig.cta_text || '',
+        }}
+        initialLogo={store.logo_url || ''}
+        initialTypography={store.typography || { pairing: 'editorial', scale: 'standard' }}
+        initialGridDensity={store.grid_density || 3}
+        initialAbout={{ heading: aboutConfig.heading || '', body: aboutConfig.body || '' }}
+        initialSocial={store.social_links || {}}
+        sectionsMeta={sectionsMeta}
+      />
     </div>
   )
 }
