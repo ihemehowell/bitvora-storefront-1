@@ -3,6 +3,7 @@ import { Storefront } from 'switch-icons'
 import { createClient } from '../../lib/supabase/server'
 import { CartIcon } from '../../components/CartIcon'
 import { BrandIcon } from '../../components/BrandIcon'
+import Image from 'next/image'
 
 export default async function StoreLayout({
   children,
@@ -33,16 +34,18 @@ export default async function StoreLayout({
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href={`/${slug}`} className="flex items-center gap-2 font-semibold text-lg">
             {store.logo_url ? (
-              <img src={store.logo_url} alt="" className="w-7 h-7 rounded-md object-cover" />
+              <Image src={store.logo_url} alt={store.name} width={128} height={128} className="w-30 h-7 rounded-md object-cover" />
             ) : (
-              <Storefront className="w-5 h-5" style={{ color: accent }} />
+              <>
+                <Storefront className="w-5 h-5" style={{ color: accent }} />
+                {store.name}
+              </>
             )}
-            {store.name}
           </a>
           <CartIcon slug={slug} />
         </div>
       </header>
-      <main className="max-w-7xl mx-auto px-6 py-10">{children}</main>
+      <main className="max-w-7xl mx-auto px-0 py-10">{children}</main>
       <footer className="max-w-5xl mx-auto px-6 py-8 text-center">
         {hasSocial && (
           <div className="flex items-center justify-center gap-4 mb-3">

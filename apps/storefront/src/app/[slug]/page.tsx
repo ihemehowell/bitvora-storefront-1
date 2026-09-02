@@ -60,22 +60,22 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   return (
     <div>
       {/* Full-bleed hero */}
-      <div className="relative -mx-6 sm:-mx-6 mb-16 h-[420px] sm:h-[520px] overflow-hidden">
+      <div className="relative -mx-7 sm:-mx-8.5 -my-5 sm:-mt-12 mb-16 h-[420px] md:h-[620px] overflow-hidden">
         {hero?.image_url ? (
           <img src={hero.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0" style={{ backgroundColor: accent }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-        <div className="relative h-full flex flex-col justify-center px-8 sm:px-16 max-w-xl">
+        <div className="relative h-full flex flex-col items-center align-middle justify-center mx-auto px-8 sm:px-16 max-w-4xl">
           <h1
-            className={`${scale.hero} text-white leading-[1.05] mb-4`}
+            className={`${scale.hero} text-white leading-[1.05] mb-4 text-center`}
             style={{ fontFamily: displayFont, fontWeight: 600 }}
           >
             {hero?.heading || store.name}
           </h1>
           {(hero?.subheading || !hero?.heading) && (
-            <p className="text-white/80 text-base sm:text-lg mb-6 max-w-md">
+            <p className="text-white/80 text-base text-center sm:text-lg mb-6 max-w-4xl leading-relaxed">
               {hero?.subheading || `Shop ${store.name}'s ${store.industry} collection.`}
             </p>
           )}
