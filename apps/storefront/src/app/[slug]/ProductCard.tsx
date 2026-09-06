@@ -37,12 +37,12 @@ export function ProductCard({ product, storeSlug, accent }: { product: Product; 
       <Link href={`/${storeSlug}/product/${product.slug}`} className="block">
         <div className="aspect-square bg-[#fafafa] p-6 relative">
           {product.category && (
-            <span className="absolute top-4 right-4 bg-white text-[10px] uppercase tracking-wide text-[#a3a3a3] rounded-full px-2.5 py-1 z-10">
+            <span className="absolute top-3 right-3 bg-white text-[9px] sm:text-[10px] uppercase tracking-wide text-[#a3a3a3] rounded-full px-2 py-1 z-10 max-w-[45%] truncate">
               {product.category}
             </span>
           )}
           {!inStock && (
-            <span className="absolute top-4 left-4 bg-white text-[10px] uppercase tracking-wide text-red-600 rounded-full px-2.5 py-1 z-10">
+            <span className="absolute top-3 left-3 bg-white text-[10px] uppercase tracking-wide text-red-600 rounded-full px-2.5 py-1 z-10">
               Out of stock
             </span>
           )}
@@ -64,7 +64,7 @@ export function ProductCard({ product, storeSlug, accent }: { product: Product; 
         </div>
       </Link>
 
-      <div className="px-4 pb-4 grid grid-cols-2 gap-2">
+      <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-2 ">
         <button
           onClick={handleAdd}
           disabled={!inStock}

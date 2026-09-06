@@ -58,9 +58,10 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   const typography = store.typography || { pairing: 'editorial', scale: 'standard' }
   const displayFont = DISPLAY_FONTS[typography.pairing] || 'Fraunces'
   const scale = SCALE_CLASSES[typography.scale] || SCALE_CLASSES.standard
-  const gridCols = store.grid_density === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
   const beforeProducts = (allSections || []).filter((s) => s.position < 5 && (s.type === 'hero' || s.type === 'banner_grid'))
   const afterProducts = (allSections || []).filter((s) => s.position >= 5)
+
+  const gridCols = store.grid_density === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
 
 function renderSection(section: { type: string; config: unknown }) {
   if (section.type === 'hero') {
@@ -172,7 +173,7 @@ return (
       </div>
     )}
 
-    <div className={`grid grid-cols-2 ${gridCols} gap-5`}>
+    <div className={`grid grid-cols-1 ${gridCols} gap-5`}>
       {products?.map((product) => (
         <ProductCard key={product.id} product={product} storeSlug={slug} accent={accent} />
       ))}

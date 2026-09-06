@@ -65,16 +65,16 @@ export function Hero() {
             </Link>
           </div>
 
-          <div className="flex max-w-[480px] gap-7 border-t border-paper/15 pt-6">
+          <div className="flex flex-wrap gap-5 sm:gap-7 max-w-[480px] border-t border-paper/15 pt-6">
             <Stat value="0" label="stores launched" />
             <Stat value="0" label="in orders processed" />
             <Stat value="0 / 5" label="merchant rating" />
           </div>
         </div>
 
-        {/* Visual: real dashboard mockup + floating WhatsApp order */}
-          <div className="relative h-full md:h-[520px]">
-  {/* Decorative blob background */}
+          {/* Visual: real dashboard mockup + floating WhatsApp order — desktop only */}
+      <div className="hidden md:block relative h-full md:h-[520px]">
+          {/* Decorative blob background */}
           <svg
             viewBox="0 0 200 200"
             xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +182,7 @@ export function Hero() {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col">
-      <b className="font-display text-[21px] text-paper">{value}</b>
+      <b className="font-display text-[15px] md:text-[21px] text-paper">{value}</b>
       <span className="mt-0.5 text-[12.5px] text-paper/55">{label}</span>
     </div>
   );

@@ -29,7 +29,7 @@ export default async function StoreLayout({
   const hasSocial = social.whatsapp || social.instagram || social.facebook || social.tiktok
 
   return (
-    <div className="min-h-screen bg-white text-[#171717]" style={{ '--accent': accent } as React.CSSProperties}>
+    <div className="min-h-screen overflow-x-hidden bg-white text-[#171717]" style={{ '--accent': accent } as React.CSSProperties}>
       <header className="border-b border-[#e5e5e5] bg-white sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href={`/${slug}`} className="flex items-center gap-2 font-semibold text-lg">
