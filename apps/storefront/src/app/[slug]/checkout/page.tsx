@@ -88,7 +88,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
       <h1 className="text-2xl font-semibold mb-6">Checkout</h1>
 
-      <div className="grid sm:grid-cols-3 gap-8">
+      <div className="grid gap-8 sm:grid-cols-3">
         <form onSubmit={handleSubmit} className="sm:col-span-2 space-y-5">
           {error && (
             <div className="flex items-start gap-2 bg-red-50 text-red-700 text-sm rounded-lg px-3 py-2">
@@ -118,7 +118,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                   key={method}
                   type="button"
                   onClick={() => setDeliveryMethod(method)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm capitalize ${
+                  className={`rounded-lg border px-3 py-3 text-sm capitalize ${
                     deliveryMethod === method ? 'border-[#171717] bg-[#fafafa]' : 'border-[#e5e5e5]'
                   }`}
                 >
@@ -150,7 +150,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
                   key={pm.value}
                   type="button"
                   onClick={() => setPaymentMethod(pm.value)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm ${
+                  className={`rounded-lg border px-3 py-3 text-sm ${
                     paymentMethod === pm.value ? 'border-[#171717] bg-[#fafafa]' : 'border-[#e5e5e5]'
                   }`}
                 >

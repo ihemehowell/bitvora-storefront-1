@@ -46,7 +46,7 @@ export default async function ProductPage({
         Back to store
       </Link>
 
-      <div className="grid sm:grid-cols-2 gap-10">
+      <div className="grid gap-6 sm:grid-cols-2 sm:gap-10">
         <div>
           <div className="aspect-square rounded-xl overflow-hidden bg-[#fafafa]">
             {product.images?.[0] ? (
@@ -70,14 +70,14 @@ export default async function ProductPage({
 
         <div>
           <h1 className="text-2xl font-semibold mb-1">{product.name}</h1>
-          <p className="text-xl font-mono text-[#404040] mb-4">
+          <p className="text-xl font-mono text-[#404040] mb-3 sm:mb-4">
             ₦{Number(product.price).toLocaleString()}
           </p>
           {product.description && (
-            <p className="text-[#525252] mb-6 whitespace-pre-line leading-relaxed">{product.description}</p>
+            <p className="text-[#525252] mb-4 sm:mb-6 whitespace-pre-line leading-relaxed">{product.description}</p>
           )}
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             {product.stock_quantity > 0 ? (
               <span className="inline-flex items-center gap-1.5 text-sm text-green-700 bg-green-50 rounded-full px-3 py-1">
                 In stock
