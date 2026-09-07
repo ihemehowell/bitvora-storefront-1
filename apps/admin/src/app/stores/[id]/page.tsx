@@ -1,7 +1,7 @@
 import { createClient } from '../../../lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-
+import { RevenueChart } from './RevenueChart'
 import { OnboardingProgress } from './OnboardingProgress'
 import { RecentOrders } from './RecentOrders'
 import { TopProducts } from './TopProducts'
@@ -43,11 +43,12 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
   const allOrders = orders ?? []
   const activeOrders = allOrders.filter((o) => o.status !== 'cancelled')
 
-  const startOfToday = new Date()
+  const now = new Date()
+  const startOfToday = new Date(now)
   startOfToday.setHours(0, 0, 0, 0)
   const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000)
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
 
   const ordersToday = allOrders.filter((o) => new Date(o.created_at) >= startOfToday).length
   const ordersYesterday = allOrders.filter((o) => {
@@ -81,6 +82,18 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
     .map(([name, unitsSold]) => ({ name, unitsSold }))
+
+    const dailyRevenue = Array.from({ length: 7 }).map((_, i) => {
+  const dayStart = new Date(startOfToday.getTime() - (6 - i) * 24 * 60 * 60 * 1000)
+  const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
+  const total = activeOrders
+    .filter((o) => {
+      const t = new Date(o.created_at)
+      return t >= dayStart && t < dayEnd
+    })
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  return { label: dayStart.toLocaleDateString('en-US', { weekday: 'short' }), total }
+})
 
   const checklistItems = [
     { label: 'Set your brand color', done: !!store.palette?.primary, href: `/stores/${id}/customize` },
@@ -121,6 +134,9 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
       </div>
 
       <OnboardingProgress storeId={store.id} items={checklistItems} />
+      <div className="mb-8">
+        <RevenueChart data={dailyRevenue} />
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <KpiCard

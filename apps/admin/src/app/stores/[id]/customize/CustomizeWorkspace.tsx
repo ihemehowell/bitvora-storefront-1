@@ -8,6 +8,7 @@ import { Input } from '@bitvora/ui/src/Input'
 import { ImageField } from './ImageField'
 
 import {
+  saveBrandColor, saveHeroSection, saveBannerGridSection, saveCtaBannerSection,
   saveTypography, saveLogo, saveGridDensity,
   saveAboutSection, saveSocialLinks, toggleSectionVisibility, reorderSection,
 } from './actions'
