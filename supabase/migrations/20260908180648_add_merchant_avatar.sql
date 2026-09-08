@@ -1,0 +1,1 @@
+alter table merchants add column avatar_url text;

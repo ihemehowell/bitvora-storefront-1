@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { createClient } from "../lib/supabase/server";
+import { TopBar } from "../components/Topbar";
 import { Shell } from "../components/Shell";
 
 
@@ -16,7 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="antialiased bg-paper text-ink">
-        <Shell userEmail={user?.email ?? null}>{children}</Shell>
+        <Shell userEmail={user?.email ?? null} topBar={<TopBar />}>{children}</Shell>
       </body>
     </html>
   );

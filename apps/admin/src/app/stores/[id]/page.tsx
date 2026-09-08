@@ -113,7 +113,7 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
             rel="noopener noreferrer"
             className="text-sm rounded-md px-3 py-1.5 font-medium bg-sand-100 text-ink/70 hover:bg-sand-200 transition-colors"
           >
-            View store ↗
+            View store 
           </a>
           <Link
             href={`/stores/${store.id}/products/new`}

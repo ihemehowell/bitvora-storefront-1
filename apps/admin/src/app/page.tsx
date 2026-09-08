@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Card } from '@bitvora/ui/src/Card'
 import { Button } from '@bitvora/ui/src/Button'
 import { createClient } from '../lib/supabase/server'
+import { IconChevronRight } from '@tabler/icons-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
           />
           <p className="relative text-ink/60 mb-3">You haven&apos;t created a store yet.</p>
           <Link href="/stores/new" className="relative text-indigo-600 font-medium">
-            Create your first store →
+            Create your first store <IconChevronRight className="w-4 h-4 inline-block ml-1 -mt-0.5" />
           </Link>
         </Card>
       ) : (

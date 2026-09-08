@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Plus, Grid, PackageBox, Storefront, Receipt } from 'switch-icons'
+import { Home, Plus, Grid, PackageBox, Storefront, Receipt, User } from 'switch-icons'
 import { IconX, IconPalette } from '@tabler/icons-react'
 import { LogoutButton } from './LogoutButton'
+import Image from 'next/image'
 
 export function Sidebar({
   userEmail,
@@ -54,7 +55,13 @@ export function Sidebar({
 
         <div className="relative p-6 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Storefront className="w-5 h-5 text-marigold-500" />
+            <Image
+            src="/brand/icon-dark-bg.svg"
+            width={124}
+            height={124}
+            alt='Logo'
+            className="w-6 h-6"
+            />
             <div>
               <p className="font-display font-semibold text-lg text-white tracking-tight leading-none">
                 Bitvora
@@ -67,7 +74,7 @@ export function Sidebar({
           </button>
         </div>
 
-        <nav className="relative flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="relative flex-1 p-3 space-y-1 overflow-y-auto min-h-0">
           <Link href="/" onClick={onClose} className={linkClass(isActive('/'))}>
             <Home className="w-4 h-4 shrink-0" />
             Dashboard
@@ -101,11 +108,19 @@ export function Sidebar({
             </div>
           )}
         </nav>
+        <div className="" />
+          <div className="px-3 py-2 border-t border-white/10">
+          <Link href="/profile" onClick={onClose} className={linkClass(isActive('/profile'))}>
+            <User className="w-4 h-4 shrink-0" />
+            Profile
+          </Link>
+        </div>
 
+          
         <div className="relative p-3 border-t border-white/10">
-          {userEmail && (
+          {/* {userEmail && (
             <p className="px-3 text-xs text-indigo-300/60 mb-2 truncate">{userEmail}</p>
-          )}
+          )} */}
           <LogoutButton />
         </div>
       </aside>
