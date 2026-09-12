@@ -7,14 +7,14 @@ export async function GET(req: NextRequest) {
   if (!slug) return NextResponse.json({ error: 'Missing slug' }, { status: 400 })
 
   const supabase = await createClient()
-  const { data: store } = await supabase
+   const { data: store } = await supabase
     .from('stores')
-    .select('id')
+    .select('id, bank_name, account_number, account_name')
     .eq('slug', slug)
     .eq('is_published', true)
     .single()
 
   if (!store) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  return NextResponse.json({ id: store.id })
+  return NextResponse.json(store)
 }

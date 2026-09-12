@@ -14,6 +14,7 @@ type CheckoutInput = {
   deliveryArea?: string
   deliveryFee: number
   paymentMethod: 'bank_transfer' | 'pay_on_delivery'
+  paymentProofUrl?: string
   items: { productId: string; name: string; price: number; quantity: number }[]
 }
 
@@ -23,7 +24,7 @@ export async function createOrder(input: CheckoutInput) {
   const subtotal = input.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
   const total = subtotal + input.deliveryFee
 
-  const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       store_id: input.storeId,
@@ -36,6 +37,7 @@ export async function createOrder(input: CheckoutInput) {
       subtotal,
       total,
       payment_method: input.paymentMethod,
+      payment_proof_url: input.paymentProofUrl || null,
       status: 'pending',
     })
     .select()

@@ -3,20 +3,25 @@
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createOrder } from './actions'
-import { ArrowLeft, AlertTriangle } from 'switch-icons'
+import { ArrowLeft, AlertTriangle,Upload, Check } from 'switch-icons'
 import Link from 'next/link'
 import { DELIVERY_ZONES } from '../../../lib/delivery-zones'
 import { useCartStore } from '../../../lib/cart-store'
+import { uploadToCloudinary } from '../../../lib/cloudinary-upload'
+
 
 export default function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const items = useCartStore((s) => s.items)
   const total = useCartStore((s) => s.total())
   const clear = useCartStore((s) => s.clear)
-  const router = useRouter()
+
 
   const [mounted, setMounted] = useState(false)
   const [storeId, setStoreId] = useState<string | null>(null)
+  const [bankDetails, setBankDetails] = useState<{ bank_name: string; account_number: string; account_name: string } | null>(null)
+  const [proofUrl, setProofUrl] = useState('')
+  const [uploadingProof, setUploadingProof] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -26,12 +31,14 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+    useEffect(() => {
     setMounted(true)
-    // Fetch store id by slug client-side (simple approach for now)
     fetch(`/api/store-id?slug=${slug}`)
       .then((r) => r.json())
-      .then((d) => setStoreId(d.id))
+      .then((d) => {
+        setStoreId(d.id)
+        setBankDetails({ bank_name: d.bank_name, account_number: d.account_number, account_name: d.account_name })
+      })
   }, [slug])
 
   const deliveryFee = deliveryMethod === 'delivery'
@@ -40,9 +47,27 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
 
   const grandTotal = total + deliveryFee
 
-  async function handleSubmit(e: React.FormEvent) {
+    async function handleProofUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingProof(true)
+    try {
+      const url = await uploadToCloudinary(file)
+      setProofUrl(url)
+    } catch {
+      setError('Proof upload failed. Try again.')
+    } finally {
+      setUploadingProof(false)
+    }
+  }
+
+      async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!storeId) return
+    if (paymentMethod === 'bank_transfer' && !proofUrl) {
+      setError('Please upload proof of payment before placing your order.')
+      return
+    }
     setLoading(true)
     setError(null)
 
@@ -56,6 +81,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       deliveryArea: deliveryMethod === 'delivery' ? area : undefined,
       deliveryFee,
       paymentMethod,
+      paymentProofUrl: paymentMethod === 'bank_transfer' ? proofUrl : undefined,
       items: items.map((i) => ({ productId: i.productId, name: i.name, price: i.price, quantity: i.quantity })),
     })
 
@@ -160,9 +186,41 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
             </div>
           </div>
 
+                    {paymentMethod === 'bank_transfer' && (
+            <div className="rounded-lg border border-[#e5e5e5] p-4 space-y-3">
+              {bankDetails?.bank_name ? (
+                <>
+                  <p className="text-sm font-medium">Send payment to:</p>
+                  <div className="text-sm space-y-1 font-mono">
+                    <p>{bankDetails.bank_name}</p>
+                    <p>{bankDetails.account_number}</p>
+                    <p className="font-sans text-[#737373]">{bankDetails.account_name}</p>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-red-600">This store hasn&apos;t set up bank details yet.</p>
+              )}
+
+              <div className="pt-2">
+                {proofUrl ? (
+                  <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm rounded-lg px-3 py-2.5">
+                    <Check className="w-4 h-4 shrink-0" />
+                    Payment proof uploaded
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 border border-dashed border-[#e5e5e5] rounded-lg px-3 py-3 text-sm text-[#737373] cursor-pointer hover:border-[#171717] hover:text-[#171717] transition-colors">
+                    <Upload className="w-4 h-4" />
+                    {uploadingProof ? 'Uploading...' : 'Upload proof of payment (required)'}
+                    <input type="file" accept="image/*" onChange={handleProofUpload} disabled={uploadingProof} className="hidden" />
+                  </label>
+                )}
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading || !storeId}
+            disabled={loading || !storeId || (paymentMethod === 'bank_transfer' && !proofUrl)}
             className="w-full rounded-lg px-4 py-3.5 text-sm font-medium bg-[#171717] text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {loading ? 'Placing order...' : 'Place order'}

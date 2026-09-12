@@ -97,7 +97,8 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
   return { label: dayStart.toLocaleDateString('en-US', { weekday: 'short' }), total }
 })
 
-  const checklistItems = [
+    const checklistItems = [
+    { label: 'Add your bank account', done: !!store.bank_name && !!store.account_number, href: `/stores/${id}/customize` },
     { label: 'Set your brand color', done: !!store.palette?.primary, href: `/stores/${id}/customize` },
     { label: 'Add at least one product', done: (productCount ?? 0) > 0, href: `/stores/${id}/products/new` },
     { label: 'Set up your homepage hero', done: !!heroSection, href: `/stores/${id}/customize` },

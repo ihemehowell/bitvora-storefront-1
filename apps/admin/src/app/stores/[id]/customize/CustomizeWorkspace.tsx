@@ -10,7 +10,7 @@ import { ImageField } from './ImageField'
 import {
   saveBrandColor, saveHeroSection, saveBannerGridSection, saveCtaBannerSection,
   saveTypography, saveLogo, saveGridDensity,
-  saveAboutSection, saveSocialLinks, toggleSectionVisibility, reorderSection,
+  saveAboutSection, saveSocialLinks, toggleSectionVisibility, reorderSection,saveBankDetails,
 } from './actions'
 import { Check } from 'switch-icons'
 import { FONT_PAIRINGS, SCALES } from '../../../../lib/font-pairings'
@@ -27,7 +27,7 @@ const PRESETS = [
   { name: 'Ocean', value: '#1D6C8C' },
 ]
 
-const TABS = ['brand', 'design', 'hero', 'about', 'collections', 'banner', 'sections', 'social'] as const
+const TABS = ['brand', 'design', 'hero', 'about', 'collections', 'banner', 'sections', 'social', 'payments'] as const
 type Tab = typeof TABS[number]
 
 export function CustomizeWorkspace({
@@ -42,6 +42,7 @@ export function CustomizeWorkspace({
   initialGridDensity,
   initialAbout,
   initialSocial,
+  initialBankDetails,
   sectionsMeta,
 }: {
   storeId: string
@@ -55,6 +56,7 @@ export function CustomizeWorkspace({
   initialGridDensity: number
   initialAbout: { heading: string; body: string }
   initialSocial: { whatsapp?: string; instagram?: string; facebook?: string; tiktok?: string }
+  initialBankDetails: { bank_name: string; account_number: string; account_name: string }
   sectionsMeta: { type: string; label: string; is_visible: boolean; position: number }[]
 }) {
   const [logo, setLogo] = useState(initialLogo)
@@ -70,6 +72,7 @@ export function CustomizeWorkspace({
   const [cta, setCta] = useState(initialCta)
   const [isPending, startTransition] = useTransition()
   const [savedTab, setSavedTab] = useState<Tab | null>(null)
+  const [bankDetails, setBankDetails] = useState(initialBankDetails)
 
     function save() {
     setSavedTab(null)
@@ -86,6 +89,7 @@ export function CustomizeWorkspace({
       if (tab === 'about') await saveAboutSection(storeId, about.heading, about.body)
       if (tab === 'social') await saveSocialLinks(storeId, social)
       setSavedTab(tab)
+      if (tab === 'payments') await saveBankDetails(storeId, bankDetails.bank_name, bankDetails.account_number, bankDetails.account_name)
     })
   }
 
@@ -325,6 +329,26 @@ export function CustomizeWorkspace({
             <div>
               <Label htmlFor="tiktok">TikTok</Label>
               <Input id="tiktok" value={social.tiktok || ''} onChange={(e) => setSocial({ ...social, tiktok: e.target.value })} placeholder="@yourstore" />
+            </div>
+          </div>
+        )}
+
+        {tab === 'payments' && (
+          <div className="space-y-3">
+            <p className="text-xs text-ink/50 -mt-1">
+              Shown to customers at checkout when they choose bank transfer.
+            </p>
+            <div>
+              <Label>Bank name</Label>
+              <Input value={bankDetails.bank_name} onChange={(e) => setBankDetails({ ...bankDetails, bank_name: e.target.value })} placeholder="e.g. GTBank" />
+            </div>
+            <div>
+              <Label>Account number</Label>
+              <Input value={bankDetails.account_number} onChange={(e) => setBankDetails({ ...bankDetails, account_number: e.target.value })} placeholder="0123456789" />
+            </div>
+            <div>
+              <Label>Account name</Label>
+              <Input value={bankDetails.account_name} onChange={(e) => setBankDetails({ ...bankDetails, account_name: e.target.value })} placeholder="e.g. Ada Okonkwo" />
             </div>
           </div>
         )}

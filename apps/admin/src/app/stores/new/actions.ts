@@ -33,6 +33,13 @@ export async function createStore(prevState: { error?: string } | undefined, for
 
   const name = formData.get('name') as string
   const industry = formData.get('industry') as string
+  const bankName = formData.get('bank_name') as string
+  const accountNumber = formData.get('account_number') as string
+  const accountName = formData.get('account_name') as string
+
+  if (!bankName || !accountNumber || !accountName) {
+    return { error: 'Bank account details are required to create a store.' }
+  }
 
   if (!name || name.trim().length < 2) {
     return { error: 'Store name is required.' }
@@ -55,13 +62,16 @@ export async function createStore(prevState: { error?: string } | undefined, for
     slug = `${baseSlug}-${attempt}`
   }
 
-  const { data: store, error: storeError } = await supabase
+    const { data: store, error: storeError } = await supabase
     .from('stores')
     .insert({
       merchant_id: merchant.id,
       name: name.trim(),
       slug,
       industry,
+      bank_name: bankName.trim(),
+      account_number: accountNumber.trim(),
+      account_name: accountName.trim(),
     })
     .select()
     .single()

@@ -124,3 +124,13 @@ export async function reorderSection(storeId: string, sectionType: string, direc
   await supabase.from('sections').update({ position: a.position }).eq('id', b.id)
   revalidatePath(`/stores/${storeId}`)
 }
+
+export async function saveBankDetails(storeId: string, bankName: string, accountNumber: string, accountName: string) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('stores')
+    .update({ bank_name: bankName, account_number: accountNumber, account_name: accountName })
+    .eq('id', storeId)
+  if (error) return { error: error.message }
+  revalidatePath(`/stores/${storeId}`)
+}
