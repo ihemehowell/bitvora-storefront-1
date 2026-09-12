@@ -7,6 +7,8 @@ import { RecentOrders } from './RecentOrders'
 import { TopProducts } from './TopProducts'
 import { KpiCard } from '@bitvora/ui/src/KpiCard'
 import { computeTrend } from './computeTrend'
+import { Card } from '@bitvora/ui/src/Card'
+import { Sparkline } from './Sparkline'
 
 const STOREFRONT_URL = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001'
 
@@ -134,31 +136,29 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
       </div>
 
       <OnboardingProgress storeId={store.id} items={checklistItems} />
-      <div className="mb-8">
-        <RevenueChart data={dailyRevenue} />
-      </div>
+      
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <KpiCard
-          label="Orders today"
-          value={String(ordersToday)}
-          trendLabel={ordersTrend.label}
-          trend={ordersTrend.trend}
-        />
-        <KpiCard
-          label="Revenue this week"
-          value={`₦${revenueThisWeek.toLocaleString()}`}
-          trendLabel={revenueTrend.label}
-          trend={revenueTrend.trend}
-        />
-        <KpiCard
-          label="Pending orders"
-          value={String(pendingCount)}
-          trendLabel={pendingCount > 0 ? 'Needs attention' : undefined}
-          trend={pendingCount > 0 ? 'down' : 'flat'}
-        />
-        <KpiCard label="Avg. order value" value={`₦${Math.round(avgOrderValue).toLocaleString()}`} />
-      </div>
+      <div className="mb-8">
+  <Card className="p-5 mb-3">
+    <p className="text-xs text-ink/50 font-medium mb-1">Revenue · this week</p>
+    <p className="font-mono text-4xl font-semibold mb-3">₦{revenueThisWeek.toLocaleString()}</p>
+    <Sparkline data={dailyRevenue.map((d) => d.total)} />
+  </Card>
+  <div className="grid grid-cols-3 divide-x divide-sand-200 border border-sand-200 rounded-[var(--radius-card)]">
+    <div className="px-4 py-3">
+      <p className="text-xs text-ink/50 mb-1">Orders today</p>
+      <p className="font-mono text-lg font-semibold">{ordersToday}</p>
+    </div>
+    <div className="px-4 py-3">
+      <p className="text-xs text-ink/50 mb-1">Pending</p>
+      <p className="font-mono text-lg font-semibold">{pendingCount}</p>
+    </div>
+    <div className="px-4 py-3">
+      <p className="text-xs text-ink/50 mb-1">Avg. order</p>
+      <p className="font-mono text-lg font-semibold">₦{Math.round(avgOrderValue).toLocaleString()}</p>
+    </div>
+  </div>
+</div>
 
       <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
         <RecentOrders storeId={store.id} orders={allOrders.slice(0, 5)} />

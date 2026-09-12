@@ -33,7 +33,7 @@ export function ProductCard({ product, storeSlug, accent }: { product: Product; 
   }
 
   return (
-    <div className="bg-white border border-[#eeeeee] rounded-2xl overflow-hidden group">
+    <div className="bg-storefront-bg border border-storefront-border rounded-xl overflow-hidden group">
       <Link href={`/${storeSlug}/product/${product.slug}`} className="block">
         <div className="aspect-square bg-[#fafafa] p-6 relative">
           {product.category && (

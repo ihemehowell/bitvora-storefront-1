@@ -1,13 +1,14 @@
 @source "../../packages/ui/src";
 
 @theme {
-  --color-storefront-bg: #ffffff;
-  --color-storefront-ink: #171717;
-  --color-storefront-muted: #737373;
-  --color-storefront-border: #e5e5e5;
-  --color-storefront-surface: #fafafa;
+  --color-storefront-bg: #fdfbf7;
+  --color-storefront-ink: #1f1b16;
+  --color-storefront-muted: #756c60;
+  --color-storefront-border: #e6ddd0;
+  --color-storefront-surface: #f4efe4;
 
   --font-storefront: "Inter", "system-ui", sans-serif;
+
   --font-storefront-display: "Fraunces", serif;
 }
 

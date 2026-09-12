@@ -1,7 +1,6 @@
 {
   "extends": "../../packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "plugins": [
       {
         "name": "next"
@@ -20,4 +19,4 @@
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
-}
+} 
