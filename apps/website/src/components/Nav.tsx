@@ -17,11 +17,7 @@ export function Nav() {
           </span>
         </div>
 
-        <nav className="hidden sm:flex items-center gap-6 text-sm text-ink/60 shrink-0">
-          <a href="#features" className="hover:text-ink transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-ink transition-colors">How it works</a>
-          <a href="http://localhost:3000/login" className="hover:text-ink transition-colors">Log in</a>
-        </nav>
+        
 
         <a
           href="http://localhost:3000/signup"
