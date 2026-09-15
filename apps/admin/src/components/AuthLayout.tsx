@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Storefront } from 'switch-icons'
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -22,7 +23,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         />
 
         <div className="relative flex items-center gap-2.5">
-          <Storefront className="w-6 h-6 text-marigold-500" />
+          <Image
+            src="/brand/icon-dark-bg.svg"
+            alt="Bitvora Storefront"
+            width={120}
+            height={30}
+            className="h-6 sm:h-7 w-auto shrink-0"
+          />
           <p className="font-display font-semibold text-xl text-white">Bitvora Storefront</p>
         </div>
 

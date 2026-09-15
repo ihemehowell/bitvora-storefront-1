@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { IconBrandTwitter, IconBrandInstagram, IconBrandTiktok, IconSend } from '@tabler/icons-react'
+import { IconBrandInstagram, IconBrandTiktok, IconBrandX, IconBrandWhatsapp } from '@tabler/icons-react'
 import { AdireStrip } from './AdireStrip'
 
 export function PremiumFooter() {
@@ -23,8 +23,8 @@ export function PremiumFooter() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 text-[13.5px]">
-            <div>
+          <div className="flex flex-col  gap-8 text-[13.5px] mx-auto">
+            <div className='flex flex-col'>
               <p className="mb-1.5 text-paper/50">WhatsApp</p>
               <p className="font-semibold">+234 903 867 9199</p>
             </div>
@@ -32,12 +32,12 @@ export function PremiumFooter() {
               <p className="mb-1.5 text-paper/50">Email</p>
               <p className="font-semibold">help@bitvorastorefront.com</p>
             </div>
-            <div className="col-span-2">
-              <div className="flex items-center gap-3 mt-2">
-                <IconBrandTwitter size={18} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconBrandInstagram size={18} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconBrandTiktok size={18} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconSend size={18} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
+            <div className="col-span-2 mx-auto">
+              <div className="flex items-center gap-10 ">
+                <IconBrandX size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
+                <IconBrandInstagram size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
+                <IconBrandTiktok size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
+                <IconBrandWhatsapp size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
               </div>
             </div>
           </div>

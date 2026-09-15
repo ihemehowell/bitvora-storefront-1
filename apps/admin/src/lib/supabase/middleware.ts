@@ -25,6 +25,15 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+    if (user && !request.nextUrl.pathname.startsWith('/suspended') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/signup')) {
+    const { data: merchant } = await supabase.from('merchants').select('is_suspended').eq('user_id', user.id).single()
+    if (merchant?.is_suspended) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/suspended'
+      return NextResponse.redirect(url)
+    }
+  }
+
   // Redirect unauthenticated users away from protected routes
   if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/signup')) {
     const url = request.nextUrl.clone()

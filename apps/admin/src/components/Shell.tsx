@@ -10,10 +10,16 @@ export function Shell({
   children,
   userEmail,
   topBar,
+  isOwner,
+  merchantName,
+  avatarUrl,
 }: {
   children: React.ReactNode
   userEmail: string | null
   topBar?: React.ReactNode
+  isOwner?: boolean
+  merchantName?: string | null
+  avatarUrl?: string | null
 }) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/login' || pathname === '/signup'
@@ -25,7 +31,14 @@ export function Shell({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar userEmail={userEmail} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        userEmail={userEmail}
+        merchantName={merchantName}
+        avatarUrl={avatarUrl}
+        isOwner={isOwner}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <div className="lg:hidden flex items-center gap-3 border-b border-sand-200 bg-white px-4 py-3 sticky top-0 z-20">
