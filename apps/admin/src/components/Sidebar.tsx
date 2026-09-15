@@ -215,7 +215,7 @@ export function Sidebar({
           </div>
         </div>
 
-        <nav className="relative flex-1 p-3 space-y-1 overflow-y-auto overflow-x-visible min-h-0">
+        <nav className="relative flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden min-h-0">
           <p className={`px-3 pt-1 pb-1 text-[10.5px] uppercase tracking-wider text-indigo-300/50 font-semibold ${collapsed ? 'lg:hidden' : ''}`}>
             Main
           </p>
