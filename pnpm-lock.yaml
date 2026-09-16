@@ -368,6 +368,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      simple-icons:
+        specifier: ^16.28.0
+        version: 16.28.0
       switch-icons:
         specifier: ^0.2.0
         version: 0.2.0(react@19.2.8)

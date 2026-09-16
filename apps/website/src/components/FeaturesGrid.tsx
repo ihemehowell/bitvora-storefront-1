@@ -2,32 +2,32 @@ import { Storefront, MobileMoney, Waybill, AiSpark, Wallet, Users } from 'switch
 
 const FEATURES = [
   {
-    image: '/feature/brand.png',
+    icon: Storefront,
     title: 'Your brand, not a template',
     description: 'Pick your own colors and hero sections — customers see your store, not a generic layout.',
   },
   {
-    image: '/feature/whatsapp.png',
+    icon: MobileMoney,
     title: 'WhatsApp-native ordering',
     description: 'Customers can order straight to WhatsApp with the cart and details pre-filled.',
   },
   {
-    image: '/feature/demo.jpg',
+    icon: Waybill,
     title: 'Nigeria-first checkout',
     description: 'Bank transfer, pay on delivery, and area-based delivery pricing for Lagos out of the box.',
   },
   {
-    image: '/feature/ai.svg',
+    icon: AiSpark,
     title: 'Fast by default',
     description: 'Built on modern web tech so your store loads quickly, even on a budget phone.',
   },
   {
-    image: '/window.svg',
+    icon: Wallet,
     title: 'Real order management',
     description: 'See every order, update status, and track payment proof — all from one dashboard.',
   },
   {
-    image: '/window.svg',
+    icon: Users,
     title: 'Built for how you sell',
     description: 'Designed around Nigerian small businesses — not adapted from a Western template.',
   },
@@ -49,7 +49,7 @@ export function FeaturesGrid() {
         {FEATURES.map((feature) => (
           <div key={feature.title} className="border border-sand-200 rounded-2xl p-6">
             <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center mb-4">
-              <img src={feature.image} alt={feature.title} className="w-5 h-5 text-indigo-600" />
+              <feature.icon className="w-5 h-5 text-indigo-600" />
             </div>
             <p className="font-display font-medium text-lg mb-1.5">{feature.title}</p>
             <p className="text-sm text-ink/60 leading-relaxed">{feature.description}</p>
