@@ -16,7 +16,7 @@ export function PremiumFooter() {
               We&apos;re here to help. If you need assistance switching from your current setup, have questions about whether Bitvora Storefront fits your business, or want help getting started, talk to a member of our team.
             </p>
             <Link
-              href="http://localhost:3000/signup"
+              href="https://bitvora-admin.vercel.app/signup"
               className="inline-flex items-center gap-2 rounded-lg bg-marigold-500 px-5 py-3 text-[14.5px] font-semibold text-indigo-950 transition hover:-translate-y-px"
             >
               Get started →
