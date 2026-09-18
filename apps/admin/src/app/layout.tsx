@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { createClient } from "../lib/supabase/server";
 import { Shell } from "../components/Shell";
+import { Inter, Space_Grotesk } from "next/font/google";
+import { cn } from "@/lib/utils";
 
+const spaceGroteskHeading = Space_Grotesk({subsets:['latin'],variable:'--font-heading'});
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Bitvora Storefront",
@@ -18,7 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : { data: null };
 
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", inter.variable, spaceGroteskHeading.variable)}>
       <body className="antialiased bg-paper text-ink">
         <Shell
         userEmail={user?.email ?? null}

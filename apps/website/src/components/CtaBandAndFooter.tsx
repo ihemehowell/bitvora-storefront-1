@@ -14,7 +14,7 @@ export function CtaBand() {
         className="py-24 text-center text-paper relative overflow-hidden"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 20%, rgba(231,160,56,0.12), transparent 55%), var(--color-indigo-950)",
+            "radial-gradient(ellipse at 30% 20%, rgba(221,161,94,0.12), transparent 55%), var(--color-indigo-950)",
         }}
       >
         <motion.div

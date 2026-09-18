@@ -9,7 +9,7 @@ import { hexToRgba, getContrastText } from "../lib/color";
 
 const SWATCHES = [
   { name: "pepper", hex: "#A73A3F" },
-  { name: "indigo", hex: "#1B2450" },
+  { name: "mint", hex: "#b7e4c7" },
   { name: "marigold", hex: "#E7A038" },
   { name: "palm", hex: "#3E6E52" },
   { name: "teal", hex: "#2E7B8C" },
@@ -122,7 +122,7 @@ export function Hero() {
           <motion.svg
             viewBox="0 0 200 200"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute -top-27 -right-42 w-[550px] md:w-[750px] opacity-[0.15] pointer-events-none"
+            className="absolute -top-30 -right-34 w-[550px] md:w-[750px] opacity-[0.15] pointer-events-none"
             aria-hidden
             animate={{ rotate: 360 }}
             transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
