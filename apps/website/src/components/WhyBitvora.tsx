@@ -1,6 +1,10 @@
+"use client";
+
 import { IconCheck, IconX, IconPalette, IconBolt, IconShieldCheck } from '@tabler/icons-react'
 import Image from 'next/image'
+import { motion } from 'motion/react'
 import { BrandIcon } from './BrandIcon'
+import { fadeUp, slideInLeft, slideInRight, staggerContainer, viewport } from '../lib/motion'
 
 const PILLARS = [
   {
@@ -45,54 +49,82 @@ export function WhyBitvora() {
   return (
     <section className="bg-paper-dim py-24 md:py-32">
       <div className="mx-auto max-w-[1240px] px-8">
-        <div className="mx-auto mb-20 max-w-[680px] text-center">
-          <span className="mb-3 block text-[12.5px] font-bold uppercase tracking-widest text-pepper-600">
+        <motion.div
+          variants={staggerContainer(0.08)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mx-auto mb-20 max-w-[680px] text-center"
+        >
+          <motion.span
+            variants={fadeUp}
+            className="mb-3 block text-[12.5px] font-bold uppercase tracking-widest text-pepper-600"
+          >
             Why Bitvora Storefront
-          </span>
-          <h2 className="mb-5 font-display text-3xl font-bold md:text-5xl leading-tight">
+          </motion.span>
+          <motion.h2 variants={fadeUp} className="mb-5 font-display text-3xl font-bold md:text-5xl leading-tight">
             We didn&apos;t build another generic store builder.
-          </h2>
-          <p className="text-[17px] leading-relaxed text-ink-soft">
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-[17px] leading-relaxed text-ink-soft">
             Most storefront platforms in Nigeria were adapted from Western templates, then patched to add Naira pricing and a WhatsApp button. We built Bitvora Storefront from the ground up around how Nigerian merchants and customers actually behave — and that difference shows up in every decision below.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         <div className="space-y-16 md:space-y-24 mb-24">
-          {PILLARS.map((pillar, i) => (
-            <div
-              key={pillar.tag}
-              className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 === 1 ? 'md:[&>*:first-child]:order-2' : ''}`}
-            >
-              <div>
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-900 text-marigold-500">
-                  {pillar.brandIcon ? (
-                    <BrandIcon icon={pillar.brandIcon} className="h-5 w-5" color="currentColor" />
-                  ) : pillar.icon ? (
-                    <pillar.icon size={20} />
-                  ) : null}
-                </div>
-                <span className="mb-2 block text-[12px] font-bold uppercase tracking-widest text-pepper-600">
-                  {pillar.tag}
-                </span>
-                <h3 className="mb-4 font-display text-2xl md:text-3xl font-bold leading-tight">
-                  {pillar.title}
-                </h3>
-                <p className="text-[15.5px] leading-relaxed text-ink-soft">
-                  {pillar.body}
-                </p>
-              </div>
-              <div className="rounded-2xl flex items-center justify-center">
-                <Image src={pillar.image} alt={pillar.tag} width={700} height={600} className="rounded-xl object-cover" />
-              </div>
-            </div>
-          ))}
+          {PILLARS.map((pillar, i) => {
+            const reversed = i % 2 === 1
+            // Text and image slide in from opposite directions, but always
+            // toward the same landing point at the same duration/ease as
+            // everything else — the rhythm alternates, the timing doesn't.
+            const textVariant = reversed ? slideInRight : slideInLeft
+            const imageVariant = reversed ? slideInLeft : slideInRight
+
+            return (
+              <motion.div
+                key={pillar.tag}
+                variants={staggerContainer(0.1)}
+                initial="hidden"
+                whileInView="show"
+                viewport={viewport}
+                className={`grid md:grid-cols-2 gap-10 items-center ${reversed ? 'md:[&>*:first-child]:order-2' : ''}`}
+              >
+                <motion.div variants={textVariant}>
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-900 text-marigold-500">
+                    {pillar.brandIcon ? (
+                      <BrandIcon icon={pillar.brandIcon} className="h-5 w-5" color="currentColor" />
+                    ) : pillar.icon ? (
+                      <pillar.icon size={20} />
+                    ) : null}
+                  </div>
+                  <span className="mb-2 block text-[12px] font-bold uppercase tracking-widest text-pepper-600">
+                    {pillar.tag}
+                  </span>
+                  <h3 className="mb-4 font-display text-2xl md:text-3xl font-bold leading-tight">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-[15.5px] leading-relaxed text-ink-soft">
+                    {pillar.body}
+                  </p>
+                </motion.div>
+                <motion.div variants={imageVariant} className="rounded-2xl flex items-center justify-center">
+                  <Image src={pillar.image} alt={pillar.tag} width={700} height={600} className="rounded-xl object-cover" />
+                </motion.div>
+              </motion.div>
+            )
+          })}
         </div>
 
-        <div className="mx-auto max-w-[900px]">
-          <h3 className="mb-8 text-center font-display text-2xl font-bold md:text-3xl">
+        <motion.div
+          variants={staggerContainer(0.08)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mx-auto max-w-[900px]"
+        >
+          <motion.h3 variants={fadeUp} className="mb-8 text-center font-display text-2xl font-bold md:text-3xl">
             Side by side, it&apos;s not close.
-          </h3>
-          <div className="rounded-2xl border border-sand-300 bg-paper overflow-hidden">
+          </motion.h3>
+          <motion.div variants={fadeUp} className="rounded-2xl border border-sand-300 bg-paper overflow-hidden">
             <div className="grid grid-cols-2 border-b border-sand-300">
               <div className="p-4 text-center font-display font-semibold text-indigo-900 border-r border-sand-300">
                 Bitvora Storefront
@@ -102,8 +134,9 @@ export function WhyBitvora() {
               </div>
             </div>
             {COMPARISON.map((row, i) => (
-              <div
+              <motion.div
                 key={i}
+                variants={fadeUp}
                 className={`grid grid-cols-2 ${i !== COMPARISON.length - 1 ? 'border-b border-sand-300' : ''}`}
               >
                 <div className="p-4 flex items-start gap-2 border-r border-sand-300">
@@ -114,10 +147,10 @@ export function WhyBitvora() {
                   <IconX size={18} className="text-pepper-600 shrink-0 mt-0.5" />
                   <span className="text-[14px] text-ink-soft">{row.them}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   )

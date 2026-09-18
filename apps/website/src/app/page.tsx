@@ -6,6 +6,7 @@ import { About } from "@/components/About";
 import { WhyBitvora } from "@/components/WhyBitvora";
 import { FAQ } from "@/components/FAQ";
 import { PremiumFooter } from "@/components/PremiumFooter";
+import { CtaBand } from "@/components/CtaBandAndFooter";
 
 export default function HomePage() {
   return (
@@ -15,6 +16,7 @@ export default function HomePage() {
       <About />
       <BentoFeatures />
       <WhyBitvora />
+      <CtaBand />
       <Steps />
       <FAQ />
       <PremiumFooter />

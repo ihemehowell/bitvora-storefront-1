@@ -67,7 +67,7 @@ function renderSection(section: { type: string; config: unknown }) {
   if (section.type === 'hero') {
     const h = section.config as { heading?: string; subheading?: string; image_url?: string; cta_text?: string }
     return (
-      <div key="hero" className="relative -mx-6 sm:-mx-6 mb-16 h-[420px] sm:h-[520px] overflow-hidden">
+      <div key="hero" className="relative -mx-4 sm:-mx-6 mb-12 sm:mb-16 h-[380px] sm:h-[520px] overflow-hidden">
         {h.image_url ? (
           <img src={h.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
@@ -133,7 +133,7 @@ function renderSection(section: { type: string; config: unknown }) {
     const c = section.config as { heading?: string; image_url?: string; cta_text?: string }
     if (!c.heading) return null
     return (
-      <div key="cta_banner" className="relative -mx-6 mt-16 h-[280px] sm:h-[340px] overflow-hidden">
+      <div key="cta_banner" className="relative -mx-4 sm:-mx-6 mt-12 sm:mt-16 h-[240px] sm:h-[340px] overflow-hidden">
         {c.image_url ? (
           <img src={c.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (

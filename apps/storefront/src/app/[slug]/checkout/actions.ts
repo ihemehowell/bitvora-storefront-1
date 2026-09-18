@@ -1,7 +1,5 @@
 'use server'
 
-
-import { redirect } from 'next/navigation'
 import { createClient } from '../../../lib/supabase/server'
 
 type CheckoutInput = {
@@ -18,48 +16,31 @@ type CheckoutInput = {
   items: { productId: string; name: string; price: number; quantity: number }[]
 }
 
+// Note: name/price in `items` are only used for optimistic UI on the client —
+// the RPC below ignores them and recomputes everything from live product
+// prices, so a tampered client payload can't change what gets charged.
 export async function createOrder(input: CheckoutInput) {
   const supabase = await createClient()
 
-  const subtotal = input.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-  const total = subtotal + input.deliveryFee
+  const { data, error } = await supabase.rpc('create_order', {
+    p_store_id: input.storeId,
+    p_customer_name: input.customerName,
+    p_customer_phone: input.customerPhone,
+    p_customer_email: input.customerEmail || null,
+    p_delivery_method: input.deliveryMethod,
+    p_delivery_area: input.deliveryArea || null,
+    p_delivery_fee: input.deliveryFee,
+    p_payment_method: input.paymentMethod,
+    p_payment_proof_url: input.paymentProofUrl || null,
+    p_items: input.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+  })
 
-    const { data: order, error: orderError } = await supabase
-    .from('orders')
-    .insert({
-      store_id: input.storeId,
-      customer_name: input.customerName,
-      customer_phone: input.customerPhone,
-      customer_email: input.customerEmail || null,
-      delivery_method: input.deliveryMethod,
-      delivery_area: input.deliveryArea || null,
-      delivery_fee: input.deliveryFee,
-      subtotal,
-      total,
-      payment_method: input.paymentMethod,
-      payment_proof_url: input.paymentProofUrl || null,
-      status: 'pending',
-    })
-    .select()
-    .single()
-
-  if (orderError || !order) {
-    return { error: orderError?.message || 'Could not create order.' }
+  if (error || !data) {
+    return { error: error?.message || 'Could not create order.' }
   }
 
-  const orderItems = input.items.map((item) => ({
-    order_id: order.id,
-    product_id: item.productId,
-    product_name: item.name,
-    quantity: item.quantity,
-    unit_price: item.price,
-  }))
-
-  const { error: itemsError } = await supabase.from('order_items').insert(orderItems)
-
-  if (itemsError) {
-    return { error: itemsError.message }
-  }
-
-  redirect(`/${input.storeSlug}/order/${order.id}`)
+  // No redirect() here — the caller (checkout page) clears the cart first,
+  // then navigates. Redirecting inside the action would cut off the
+  // client's code right after the await, before clear() ever runs.
+  return { orderId: data.order_id as string }
 }

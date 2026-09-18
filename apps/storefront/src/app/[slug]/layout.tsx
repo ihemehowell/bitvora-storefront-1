@@ -45,7 +45,7 @@ export default async function StoreLayout({
           <CartIcon slug={slug} />
         </div>
       </header>
-      <main className="max-w-7xl mx-auto px-0 py-10">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">{children}</main>
       <footer className="max-w-5xl mx-auto px-6 py-8 text-center">
         {hasSocial && (
           <div className="flex items-center justify-center gap-4 mb-3">

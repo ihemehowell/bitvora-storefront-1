@@ -1,14 +1,42 @@
+'use client'
+
 import Link from 'next/link'
 import { IconBrandInstagram, IconBrandTiktok, IconBrandX, IconBrandWhatsapp } from '@tabler/icons-react'
+import { motion } from 'motion/react'
 import { AdireStrip } from './AdireStrip'
+import { fadeUp, staggerContainer, viewport } from '../lib/motion'
+
+const SOCIALS = [
+  { Icon: IconBrandX, label: 'X (Twitter)' },
+  { Icon: IconBrandInstagram, label: 'Instagram' },
+  { Icon: IconBrandTiktok, label: 'TikTok' },
+  { Icon: IconBrandWhatsapp, label: 'WhatsApp' },
+]
 
 export function PremiumFooter() {
   return (
-    <footer className="bg-indigo-950 text-paper">
+    <footer className="bg-indigo-950 text-paper relative overflow-hidden">
+      {/* Same light the hero opened with, breathing slowly — this is the
+          actual last thing on the page, so the callback belongs here. */}
+      <motion.div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 25% 10%, rgba(231,160,56,0.12), transparent 55%)",
+        }}
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
       <AdireStrip dark />
-      <div className="mx-auto max-w-[1240px] px-8 py-20">
-        <div className="grid md:grid-cols-[1.3fr_1fr] gap-12 mb-16">
-          <div>
+      <div className="mx-auto max-w-[1240px] px-8 py-20 relative">
+        <motion.div
+          variants={staggerContainer(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="grid md:grid-cols-[1.3fr_1fr] gap-12 mb-16"
+        >
+          <motion.div variants={fadeUp}>
             <h2 className="mb-4 font-display text-4xl font-bold leading-tight md:text-5xl">
               Get pro <span className="text-marigold-500">support.</span>
             </h2>
@@ -21,9 +49,9 @@ export function PremiumFooter() {
             >
               Get started →
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col  gap-8 text-[13.5px] mx-auto">
+          <motion.div variants={fadeUp} className="flex flex-col  gap-8 text-[13.5px] mx-auto">
             <div className='flex flex-col'>
               <p className="mb-1.5 text-paper/50">WhatsApp</p>
               <p className="font-semibold">+234 903 867 9199</p>
@@ -32,18 +60,46 @@ export function PremiumFooter() {
               <p className="mb-1.5 text-paper/50">Email</p>
               <p className="font-semibold">help@bitvorastorefront.com</p>
             </div>
-            <div className="col-span-2 mx-auto">
-              <div className="flex items-center gap-10 ">
-                <IconBrandX size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconBrandInstagram size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconBrandTiktok size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-                <IconBrandWhatsapp size={20} className="text-paper/70 hover:text-paper transition-colors cursor-pointer" />
-              </div>
+            <div>
+              <p className="mb-1.5 text-paper/50">Address</p>
+              <p className="font-semibold">Dacosta Yaba, Lagos, Nigeria</p>
             </div>
-          </div>
-        </div>
+            <div className="col-span-2 mx-auto">
+              <motion.div
+                variants={staggerContainer(0.06)}
+                initial="hidden"
+                whileInView="show"
+                viewport={viewport}
+                className="flex items-center gap-10 "
+              >
+                {SOCIALS.map(({ Icon, label }) => (
+                  <motion.div key={label} variants={fadeUp}>
+                    <motion.span
+                      whileHover={{ scale: 1.18, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                      className="block"
+                    >
+                      <Icon
+                        size={20}
+                        aria-label={label}
+                        className="text-paper/70 hover:text-paper transition-colors cursor-pointer"
+                      />
+                    </motion.span>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="border-t border-paper/10 pt-8">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="border-t border-paper/10 pt-8"
+        >
           <p className="mb-6 max-w-[820px] text-[13px] leading-relaxed text-paper/50">
             Bitvora Storefront is a Bitvoratech product built to empower Nigerian businesses with storefronts that look like their brand — WhatsApp ordering, Naira pricing, and Lagos-first delivery, all in one place.
           </p>
@@ -54,7 +110,7 @@ export function PremiumFooter() {
               <Link href="/privacy" className="hover:text-paper transition-colors">Privacy</Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   )

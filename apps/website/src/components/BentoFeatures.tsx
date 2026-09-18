@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import {
   IconBrandWhatsapp,
   IconBuildingStore,
@@ -6,6 +9,7 @@ import {
   IconPackage,
   IconUsers,
 } from "@tabler/icons-react";
+import { fadeUp, staggerContainer, viewport } from "../lib/motion";
 
 const ORDERS = [
   { name: "Chiamaka Obi", amount: "₦22,000" },
@@ -17,23 +21,44 @@ export function BentoFeatures() {
   return (
     <section id="features" className="py-24">
       <div className="mx-auto max-w-[1240px] px-8">
-        <div className="mx-auto mb-14 max-w-[560px] text-center">
-          <span className="mb-3 block text-[12.5px] font-bold uppercase tracking-widest text-pepper-600">
+        <motion.div
+          variants={staggerContainer(0.08)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="mx-auto mb-14 max-w-[560px] text-center"
+        >
+          <motion.span
+            variants={fadeUp}
+            className="mb-3 block text-[12.5px] font-bold uppercase tracking-widest text-pepper-600"
+          >
             Everything your store needs
-          </span>
-          <h2 className="mb-3.5 font-display text-3xl font-bold md:text-4xl">
+          </motion.span>
+          <motion.h2
+            variants={fadeUp}
+            className="mb-3.5 font-display text-3xl font-bold md:text-4xl"
+          >
             No plugins, no bolt-ons.
-          </h2>
-          <p className="text-[16px] leading-relaxed text-ink-soft">
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-[16px] leading-relaxed text-ink-soft">
             Just what a growing Nigerian business actually uses — built
             around how you already sell, not adapted from a Western
             template.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-6 md:auto-rows-[132px]">
-          {/* Large tile */}
-          <div className="col-span-2 flex flex-col justify-between rounded-2xl bg-indigo-900 p-6 text-paper md:col-span-3 md:row-span-2">
+        <motion.div
+          variants={staggerContainer(0.09, 0.05)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="grid grid-cols-2 gap-4 md:grid-cols-6 md:auto-rows-[132px]"
+        >
+          {/* Large tile — leads the sequence */}
+          <motion.div
+            variants={fadeUp}
+            className="col-span-2 flex flex-col justify-between rounded-2xl bg-indigo-900 p-6 text-paper md:col-span-3 md:row-span-2"
+          >
             <div>
               <IconTile bg="rgba(231,160,56,0.15)" color="#E7A038">
                 <IconBrandWhatsapp size={18} />
@@ -64,7 +89,7 @@ export function BentoFeatures() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           <Tile
             icon={<IconBuildingStore size={18} />}
@@ -106,7 +131,7 @@ export function BentoFeatures() {
             body="Designed around Nigerian small businesses, not adapted."
             className="col-span-2 md:col-span-2 py-2"
           />
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -147,7 +172,8 @@ function Tile({
   className?: string;
 }) {
   return (
-    <div
+    <motion.div
+      variants={fadeUp}
       className={`rounded-2xl border border-sand-300 bg-paper p-6 ${className}`}
     >
       <IconTile bg={iconBg} color={iconColor}>
@@ -155,6 +181,6 @@ function Tile({
       </IconTile>
       <h3 className="mb-1.5 text-[17px] font-semibold">{title}</h3>
       <p className="text-[13.5px] leading-relaxed text-ink-soft">{body}</p>
-    </div>
+    </motion.div>
   );
 }

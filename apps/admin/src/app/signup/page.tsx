@@ -36,7 +36,9 @@ export default function SignupPage() {
       return
     }
 
-    router.push('/')
+    // Verification (phone OTP + NIN/CAC) is mandatory before a merchant can
+    // create a store — stores/new shows the verify wizard until that passes.
+    router.push('/stores/new')
     router.refresh()
   }
 

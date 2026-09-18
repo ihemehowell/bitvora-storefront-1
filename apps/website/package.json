@@ -15,7 +15,8 @@
     "react-dom": "19.2.8",
     "switch-icons": "^0.2.0",
     "simple-icons": "^16.28.0",
-    "@bitvora/ui": "workspace:*"
+    "@bitvora/ui": "workspace:*",
+    "motion": "^12.4.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -4,6 +4,17 @@ import Link from 'next/link'
 import { createClient } from '../../../../lib/supabase/server';
 import { PaymentProofUpload } from './PaymentProofUpload'
 
+type OrderConfirmation = {
+  id: string
+  customer_name: string
+  payment_method: 'bank_transfer' | 'pay_on_delivery'
+  payment_proof_url: string | null
+  delivery_fee: number
+  total: number
+  status: string
+  order_items: { id: string; product_name: string; quantity: number; unit_price: number }[]
+}
+
 export default async function OrderConfirmationPage({
   params,
 }: {
@@ -11,11 +22,8 @@ export default async function OrderConfirmationPage({
 }) {
   const { slug, orderId } = await params
   const supabase = await createClient()
-  const { data: order } = await supabase
-    .from('orders')
-    .select('*, order_items(*)')
-    .eq('id', orderId)
-    .single()
+  const { data } = await supabase.rpc('get_order_confirmation', { p_order_id: orderId })
+  const order = data as OrderConfirmation | null
   if (!order) notFound()
   return (
     <div className="max-w-lg mx-auto text-center py-10">
@@ -24,11 +32,11 @@ export default async function OrderConfirmationPage({
       </div>
       <h1 className="text-2xl font-semibold mb-2">Order placed!</h1>
       <p className="text-[#737373] mb-8">
-        Thanks {order.customer_name.split(' ')[0]}, we've received your order.
+        Thanks {order.customer_name.split(' ')[0]}, we&apos;ve received your order.
         {order.payment_method === 'bank_transfer' && ' Please complete payment via bank transfer to confirm.'}
       </p>
       <div className="border border-[#e5e5e5] rounded-xl p-5 text-left space-y-2">
-        {order.order_items.map((item: { id: string; product_name: string; quantity: number; unit_price: number }) => (
+        {order.order_items.map((item) => (
           <div key={item.id} className="flex justify-between text-sm">
             <span className="text-[#525252]">{item.product_name} × {item.quantity}</span>
             <span className="font-mono">₦{(item.unit_price * item.quantity).toLocaleString()}</span>

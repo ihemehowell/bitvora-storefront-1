@@ -1,33 +1,47 @@
+"use client";
+
 import Link from "next/link";
-import { IconBuildingStore } from "@tabler/icons-react";
-import { AdireStrip } from "./AdireStrip";
 import Image from "next/image";
+import { motion } from "motion/react";
+import { AdireStrip } from "./AdireStrip";
+import { fadeUp, staggerContainer, viewport } from "../lib/motion";
 
 export function CtaBand() {
   return (
     <>
       <AdireStrip />
       <section
-        className="py-24 text-center text-paper"
+        className="py-24 text-center text-paper relative overflow-hidden"
         style={{
           background:
             "radial-gradient(ellipse at 30% 20%, rgba(231,160,56,0.12), transparent 55%), var(--color-indigo-950)",
         }}
       >
-        <div className="mx-auto max-w-[1240px] px-8">
-          <h2 className="mx-auto mb-4 max-w-[600px] font-display text-3xl font-bold md:text-[38px]">
-            Build a store that actually looks like yours.
-          </h2>
-          <p className="mb-8 text-[16px] text-paper/65">
-            Free to start. No code, no template look, no card required.
-          </p>
-          <Link
-            href="/signup"
-            className="inline-block rounded-lg bg-marigold-500 px-6 py-3.5 text-[14.5px] font-semibold text-indigo-950 transition hover:-translate-y-px"
+        <motion.div
+          variants={staggerContainer(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewport}
+          className="relative mx-auto max-w-[1240px] px-8"
+        >
+          <motion.h2
+            variants={fadeUp}
+            className="mx-auto mb-4 max-w-[600px] font-display text-3xl font-bold md:text-[38px]"
           >
-            Start building free
-          </Link>
-        </div>
+            Build a store that actually looks like yours.
+          </motion.h2>
+          <motion.p variants={fadeUp} className="mb-8 text-[16px] text-paper/65">
+            Free to start. No code, no template look, no card required.
+          </motion.p>
+          <motion.div variants={fadeUp}>
+            <Link
+              href="/signup"
+              className="inline-block rounded-lg bg-marigold-500 px-6 py-3.5 text-[14.5px] font-semibold text-indigo-950 transition hover:-translate-y-px"
+            >
+              Start building free
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
       <AdireStrip dark />
     </>

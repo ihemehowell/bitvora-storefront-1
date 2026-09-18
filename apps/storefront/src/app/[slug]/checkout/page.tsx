@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
-// import { useRouter } from 'next/navigation'
+import { use, useEffect, useState, useSyncExternalStore } from 'react'
+import { useRouter } from 'next/navigation'
 import { createOrder } from './actions'
 import { ArrowLeft, AlertTriangle,Upload, Check } from 'switch-icons'
 import Link from 'next/link'
@@ -12,12 +12,17 @@ import { uploadToCloudinary } from '../../../lib/cloudinary-upload'
 
 export default function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  const router = useRouter()
   const items = useCartStore((s) => s.items)
   const total = useCartStore((s) => s.total())
   const clear = useCartStore((s) => s.clear)
 
 
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
   const [storeId, setStoreId] = useState<string | null>(null)
   const [bankDetails, setBankDetails] = useState<{ bank_name: string; account_number: string; account_name: string } | null>(null)
   const [proofUrl, setProofUrl] = useState('')
@@ -32,7 +37,6 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
   const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-    setMounted(true)
     fetch(`/api/store-id?slug=${slug}`)
       .then((r) => r.json())
       .then((d) => {
@@ -91,7 +95,10 @@ export default function CheckoutPage({ params }: { params: Promise<{ slug: strin
       return
     }
 
+    // Clear before navigating — once we push, this component unmounts and
+    // never gets a chance to run this again.
     clear()
+    router.push(`/${slug}/order/${result.orderId}`)
   }
 
   if (!mounted) return null

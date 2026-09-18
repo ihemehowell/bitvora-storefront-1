@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { AdireStrip } from "./AdireStrip";
-import Image from "next/image";
+import { fadeUp, staggerContainer, EASE } from "../lib/motion";
+import { hexToRgba, getContrastText } from "../lib/color";
 
 const SWATCHES = [
   { name: "pepper", hex: "#A73A3F" },
@@ -18,78 +20,141 @@ const PRODUCTS = [
   { name: "Adire Wrap Skirt", meta: "₦24,000 · 6 in stock" },
 ];
 
+const DURATION_LONG = 0.7;
+const COLOR_TRANSITION = { duration: 0.45, ease: EASE };
+
 export function Hero() {
-  const [activeSwatch, setActiveSwatch] = useState(0);
+  const [activeSwatch, setActiveSwatch] = useState(2); // starts on marigold
   const [published, setPublished] = useState(true);
+
+  const accent = SWATCHES[activeSwatch].hex;
+  const accentText = getContrastText(accent);
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-indigo-900 to-indigo-950 text-paper">
-      <div
+      {/* Top glow — tracks the picked accent instead of being fixed marigold */}
+      <motion.div
         className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at 78% 0%, rgba(231,160,56,0.14), transparent 55%)",
+        animate={{
+          background: `radial-gradient(ellipse at 78% 0%, ${hexToRgba(accent, 0.14)}, transparent 55%)`,
         }}
+        transition={COLOR_TRANSITION}
       />
 
       <div className="relative mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-10 px-8 py-20 md:grid-cols-[1.05fr_0.95fr] md:py-28">
-        {/* Copy */}
-        <div>
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-marigold-500/30 bg-marigold-500/10 px-3 py-1.5 text-[12.5px] font-semibold tracking-wide text-marigold-400">
+        {/* Copy — staggers in on mount, one beat after another */}
+        <motion.div
+          variants={staggerContainer(0.12)}
+          initial="hidden"
+          animate="show"
+        >
+          <motion.span
+            variants={fadeUp}
+            animate={{
+              borderColor: hexToRgba(accent, 0.3),
+              backgroundColor: hexToRgba(accent, 0.1),
+              color: accent,
+            }}
+            transition={COLOR_TRANSITION}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold tracking-wide"
+          >
             ● A Bitvoratech product
-          </span>
+          </motion.span>
 
-          <h1 className="mb-6 max-w-[600px] font-display text-4xl font-bold leading-[1.05] md:text-[56px]">
+          <motion.h1
+            variants={fadeUp}
+            className="mb-6 max-w-[600px] font-display text-4xl font-bold leading-[1.05] md:text-[56px]"
+          >
             Storefronts that look like your brand,{" "}
-            <span className="text-marigold-500">not a template.</span>
-          </h1>
+            <motion.span animate={{ color: accent }} transition={COLOR_TRANSITION}>
+              not a template.
+            </motion.span>
+          </motion.h1>
 
-          <p className="mb-8 max-w-[460px] text-[17px] leading-relaxed text-paper/70">
+          <motion.p
+            variants={fadeUp}
+            className="mb-8 max-w-[460px] text-[17px] leading-relaxed text-paper/70"
+          >
             Build a fast, beautiful online store made for how Nigerians
             actually sell — WhatsApp orders, Naira pricing, Lagos delivery,
             no code required.
-          </p>
+          </motion.p>
 
-          <div className="mb-10 flex flex-wrap items-center gap-3.5">
-            <Link
-              href="/signup"
-              className="rounded-lg bg-marigold-500 px-5 py-3 text-[14.5px] font-semibold text-indigo-950 transition hover:-translate-y-px hover:shadow-[0_6px_18px_rgba(231,160,56,0.35)]"
+          <motion.div
+            variants={fadeUp}
+            className="mb-10 flex flex-wrap items-center gap-3.5"
+          >
+            <motion.div
+              animate={{ backgroundColor: accent }}
+              whileHover={{ boxShadow: `0 6px 18px ${hexToRgba(accent, 0.35)}` }}
+              transition={COLOR_TRANSITION}
+              style={{ color: accentText }}
+              className="rounded-lg"
             >
-              Start building free
-            </Link>
+              <Link
+                href="/signup"
+                className="block rounded-lg px-5 py-3 text-[14.5px] font-semibold transition hover:-translate-y-px"
+              >
+                Start building free
+              </Link>
+            </motion.div>
             <Link
               href="#how-it-works"
               className="rounded-lg border border-paper/30 px-5 py-3 text-[14.5px] font-semibold transition hover:-translate-y-px"
             >
               See how it works
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-wrap gap-5 sm:gap-7 max-w-[480px] border-t border-paper/15 pt-6">
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-wrap gap-5 sm:gap-7 max-w-[480px] border-t border-paper/15 pt-6"
+          >
             <Stat value="0" label="stores launched" />
             <Stat value="0" label="in orders processed" />
             <Stat value="0 / 5" label="merchant rating" />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-          {/* Visual: real dashboard mockup + floating WhatsApp order — desktop only */}
-      <div className="hidden md:block relative h-full md:h-[520px]">
-          {/* Decorative blob background */}
-          <svg
+        {/* Visual: real dashboard mockup + floating WhatsApp order — desktop only */}
+        <div className="hidden md:block relative h-full md:h-[520px]">
+          {/* Decorative blob background — rotates forever, recolors with the accent */}
+          <motion.svg
             viewBox="0 0 200 200"
             xmlns="http://www.w3.org/2000/svg"
             className="absolute -top-27 -right-42 w-[550px] md:w-[750px] opacity-[0.15] pointer-events-none"
             aria-hidden
+            animate={{ rotate: 360 }}
+            transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
           >
-            <path
-              fill="#E7A038"
+            <motion.path
+              animate={{ fill: accent }}
+              transition={COLOR_TRANSITION}
               d="M39.8,-68.9C53.2,-61.1,67.1,-53.9,76.4,-42.5C85.7,-31.2,90.4,-15.6,87.8,-1.5C85.1,12.5,75.1,25,66.6,37.9C58.2,50.7,51.3,63.8,40.5,73.4C29.6,82.9,14.8,88.8,0.3,88.3C-14.3,87.9,-28.6,81.1,-40,71.9C-51.3,62.6,-59.7,51,-65.5,38.6C-71.2,26.2,-74.3,13.1,-75.4,-0.6C-76.4,-14.3,-75.4,-28.7,-69.7,-41C-63.9,-53.4,-53.4,-63.8,-41,-72.3C-28.6,-80.7,-14.3,-87.3,-0.6,-86.3C13.1,-85.3,26.3,-76.8,39.8,-68.9Z"
               transform="translate(100 100)"
             />
-          </svg>
+          </motion.svg>
 
-          <div className="absolute right-0 top-0 w-[300px] rotate-[2.5deg] overflow-hidden rounded-2xl bg-paper shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] md:w-[420px]">
-          <div className="flex items-center gap-1.5 border-b border-sand-300 bg-paper-dim px-3.5 py-2.5">
+          {/* Dashboard mockup — lands a beat after the copy, then breathes gently */}
+          <motion.div
+            initial={{ opacity: 0, y: 40, rotate: 2.5 }}
+            animate={{
+              opacity: 1,
+              y: [0, -6, 0],
+              rotate: 2.5,
+            }}
+            transition={{
+              opacity: { duration: DURATION_LONG, ease: EASE, delay: 0.5 },
+              y: {
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1.1,
+              },
+            }}
+            className="absolute right-0 top-0 w-[300px] overflow-hidden rounded-2xl bg-paper shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] md:w-[420px]"
+          >
+            <div className="flex items-center gap-1.5 border-b border-sand-300 bg-paper-dim px-3.5 py-2.5">
               <span className="h-2 w-2 rounded-full bg-sand-400" />
               <span className="h-2 w-2 rounded-full bg-sand-400" />
               <span className="h-2 w-2 rounded-full bg-sand-400" />
@@ -140,37 +205,54 @@ export function Hero() {
                 <span className="text-[12.5px] font-semibold">
                   {published ? "Store is live" : "Store is unpublished"}
                 </span>
-                <span
-                  className="relative h-[19px] w-[34px] rounded-full transition-colors"
-                  style={{ background: published ? "#E7A038" : "#5B5346" }}
+                <motion.span
+                  className="relative h-[19px] w-[34px] rounded-full"
+                  animate={{ backgroundColor: published ? accent : "#5B5346" }}
+                  transition={COLOR_TRANSITION}
                 >
                   <span
                     className="absolute top-0.5 h-3.5 w-3.5 rounded-full bg-indigo-950 transition-all"
                     style={{ left: published ? "17px" : "2px" }}
                   />
-                </span>
+                </motion.span>
               </button>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="absolute bottom-3.5 left-0 w-[190px] -rotate-3 rounded-xl bg-paper p-3.5 text-ink shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] md:w-[250px]">
+          {/* WhatsApp order card — arrives last, as if it just came in */}
+          <motion.div
+            initial={{ opacity: 0, y: 30, x: -10, rotate: -3 }}
+            animate={{ opacity: 1, y: 0, x: 0, rotate: -3 }}
+            transition={{ duration: DURATION_LONG, ease: EASE, delay: 0.85 }}
+            className="absolute bottom-3.5 left-0 w-[190px] rounded-xl bg-paper p-3.5 text-ink shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] md:w-[250px]"
+          >
             <div className="mb-2.5 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-palm-600" />
+              {/* Kept as WhatsApp's own green, not the brand accent — this is
+                  a status dot ("new order came in"), not a brand element. */}
+              <motion.span
+                className="h-2 w-2 rounded-full bg-palm-600"
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
+              />
               <span className="text-[11px] font-semibold text-ink-soft">
                 New order · WhatsApp
               </span>
             </div>
             <div className="mb-2.5 rounded-lg bg-paper-dim p-2.5 text-[12px] leading-relaxed">
               Hi! I&rsquo;d like the{" "}
-              <span className="font-mono font-medium text-pepper-600">
+              <motion.span
+                animate={{ color: accent }}
+                transition={COLOR_TRANSITION}
+                className="font-mono font-medium"
+              >
                 Woven Raffia Tote
-              </span>
+              </motion.span>
               , size — is it available for delivery to Yaba?
             </div>
             <div className="rounded-md bg-palm-600 py-2 text-center text-[12.5px] font-semibold text-white">
               Reply on WhatsApp
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
