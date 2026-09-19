@@ -1,13 +1,29 @@
-export function Sparkline({ data, color = 'var(--color-marigold-500)' }: { data: number[]; color?: string }) {
-  const max = Math.max(...data, 1)
-  const min = Math.min(...data, 0)
-  const range = max - min || 1
-  const points = data
-    .map((v, i) => `${(i / (data.length - 1)) * 100},${100 - ((v - min) / range) * 100}`)
-    .join(' ')
+'use client'
+
+import { Line, LineChart } from 'recharts'
+import { ChartConfig, ChartContainer } from '@/components/ui/chart'
+
+const chartConfig = {
+  value: {
+    label: 'Value',
+  },
+} satisfies ChartConfig
+
+export function Sparkline({ data, color = 'var(--color-indigo-600)' }: { data: number[]; color?: string }) {
+  const chartData = data.map((value, index) => ({ index, value }))
+
   return (
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-10">
-      <polyline points={points} fill="none" stroke={color} strokeWidth="3" vectorEffect="non-scaling-stroke" />
-    </svg>
+    <ChartContainer config={chartConfig} className="w-16 h-8 aspect-auto">
+      <LineChart data={chartData} margin={{ top: 2, right: 1, bottom: 2, left: 1 }}>
+        <Line
+          type="monotone"
+          dataKey="value"
+          stroke={color}
+          strokeWidth={2}
+          dot={false}
+          isAnimationActive={false}
+        />
+      </LineChart>
+    </ChartContainer>
   )
 }

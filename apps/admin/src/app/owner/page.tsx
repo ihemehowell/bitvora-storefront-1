@@ -1,21 +1,14 @@
-
 import { Card } from '@bitvora/ui/src/Card'
-import { PackageBox, Storefront, Receipt, Users } from 'switch-icons'
+import { KpiCard } from '@bitvora/ui/src/KpiCard'
 import { createAdminClient } from '../../lib/supabase/admin';
+import { computeTrend } from '../../lib/computeTrend'
 import { Sparkline } from './SparkLine';
 
-
-function bucketByDay(rows: { total: number; created_at: string }[], days: number) {
-  const startOfToday = new Date()
-  startOfToday.setHours(0, 0, 0, 0)
-  return Array.from({ length: days }).map((_, i) => {
-    const dayStart = new Date(startOfToday.getTime() - (days - 1 - i) * 24 * 60 * 60 * 1000)
-    const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
-    return rows.filter((r) => {
-      const t = new Date(r.created_at)
-      return t >= dayStart && t < dayEnd
-    }).length
-  })
+function rangeCount(rows: { created_at: string }[], start: Date, end: Date) {
+  return rows.filter((r) => {
+    const t = new Date(r.created_at)
+    return t >= start && t < end
+  }).length
 }
 
 export default async function OwnerOverviewPage() {
@@ -34,20 +27,52 @@ export default async function OwnerOverviewPage() {
   const pendingCount = orders.filter((o) => o.status === 'pending').length
   const publishedCount = storeRows.filter((s) => s.is_published).length
 
-  const merchantsSpark = bucketByDay(merchantRows.map((m) => ({ total: 1, created_at: m.created_at })), 14)
-  const storesSpark = bucketByDay(storeRows.map((s) => ({ total: 1, created_at: s.created_at })), 14)
-  const ordersSpark = bucketByDay(orders.map((o) => ({ total: 1, created_at: o.created_at })), 14)
-  const gmvSpark = (() => {
-    const startOfToday = new Date()
-    startOfToday.setHours(0, 0, 0, 0)
-    return Array.from({ length: 14 }).map((_, i) => {
-      const dayStart = new Date(startOfToday.getTime() - (13 - i) * 24 * 60 * 60 * 1000)
-      const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
-      return activeOrders
-        .filter((o) => { const t = new Date(o.created_at); return t >= dayStart && t < dayEnd })
-        .reduce((sum, o) => sum + Number(o.total), 0)
+  const now = new Date()
+  const startOfToday = new Date(now)
+  startOfToday.setHours(0, 0, 0, 0)
+  const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(startOfToday.getTime() - 14 * 24 * 60 * 60 * 1000)
+
+  const merchantsTrend = computeTrend(
+    rangeCount(merchantRows, sevenDaysAgo, now),
+    rangeCount(merchantRows, fourteenDaysAgo, sevenDaysAgo),
+    'vs last week'
+  )
+  const storesTrend = computeTrend(
+    rangeCount(storeRows, sevenDaysAgo, now),
+    rangeCount(storeRows, fourteenDaysAgo, sevenDaysAgo),
+    'vs last week'
+  )
+  const ordersTrend = computeTrend(
+    rangeCount(orders, sevenDaysAgo, now),
+    rangeCount(orders, fourteenDaysAgo, sevenDaysAgo),
+    'vs last week'
+  )
+
+  const gmvThisWeek = activeOrders
+    .filter((o) => {
+      const t = new Date(o.created_at)
+      return t >= sevenDaysAgo && t < now
     })
-  })()
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  const gmvLastWeek = activeOrders
+    .filter((o) => {
+      const t = new Date(o.created_at)
+      return t >= fourteenDaysAgo && t < sevenDaysAgo
+    })
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  const gmvTrend = computeTrend(gmvThisWeek, gmvLastWeek, 'vs last week')
+
+  const gmvSpark = Array.from({ length: 14 }).map((_, i) => {
+    const dayStart = new Date(startOfToday.getTime() - (13 - i) * 24 * 60 * 60 * 1000)
+    const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
+    return activeOrders
+      .filter((o) => {
+        const t = new Date(o.created_at)
+        return t >= dayStart && t < dayEnd
+      })
+      .reduce((sum, o) => sum + Number(o.total), 0)
+  })
 
   const { data: recentStores } = await admin
     .from('stores')
@@ -57,39 +82,49 @@ export default async function OwnerOverviewPage() {
 
   return (
     <div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <Card className="p-4.5">
-          <div className="flex items-center justify-between mb-2">
-            <Users className="w-4 h-4 text-indigo-600" />
-            <Sparkline data={merchantsSpark} />
+      <div className="mb-8">
+        <Card className="p-5 mb-3">
+          <div className="flex items-start justify-between mb-1">
+            <p className="text-xs text-ink/50 font-medium">Total GMV</p>
+            {gmvTrend.label && (
+              <span
+                className={`text-xs font-medium ${
+                  gmvTrend.trend === 'up'
+                    ? 'text-palm-600'
+                    : gmvTrend.trend === 'down'
+                      ? 'text-pepper-600'
+                      : 'text-ink/40'
+                }`}
+              >
+                {gmvTrend.trend === 'up' ? '↑ ' : gmvTrend.trend === 'down' ? '↓ ' : ''}
+                {gmvTrend.label}
+              </span>
+            )}
           </div>
-          <p className="text-xs text-ink/50 font-medium mb-1">Merchants</p>
-          <p className="font-display text-2xl font-semibold">{merchantRows.length}</p>
+          <p className="font-display text-4xl font-semibold mb-3">₦{totalGMV.toLocaleString()}</p>
+          <Sparkline data={gmvSpark} color="var(--color-marigold-500)" />
         </Card>
-        <Card className="p-4.5">
-          <div className="flex items-center justify-between mb-2">
-            <Storefront className="w-4 h-4 text-indigo-600" />
-            <Sparkline data={storesSpark} />
-          </div>
-          <p className="text-xs text-ink/50 font-medium mb-1">Stores ({publishedCount} live)</p>
-          <p className="font-display text-2xl font-semibold">{storeRows.length}</p>
-        </Card>
-        <Card className="p-4.5">
-          <div className="flex items-center justify-between mb-2">
-            <Receipt className="w-4 h-4 text-indigo-600" />
-            <Sparkline data={ordersSpark} />
-          </div>
-          <p className="text-xs text-ink/50 font-medium mb-1">Orders ({pendingCount} pending)</p>
-          <p className="font-display text-2xl font-semibold">{orders.length}</p>
-        </Card>
-        <Card className="p-4.5">
-          <div className="flex items-center justify-between mb-2">
-            <PackageBox className="w-4 h-4 text-indigo-600" />
-            <Sparkline data={gmvSpark} color="var(--color-marigold-500)" />
-          </div>
-          <p className="text-xs text-ink/50 font-medium mb-1">Total GMV</p>
-          <p className="font-display text-2xl font-semibold">₦{totalGMV.toLocaleString()}</p>
-        </Card>
+
+        <div className="grid grid-cols-3 gap-3">
+          <KpiCard
+            label="Merchants"
+            value={merchantRows.length.toLocaleString()}
+            trendLabel={merchantsTrend.label}
+            trend={merchantsTrend.trend}
+          />
+          <KpiCard
+            label={`Stores (${publishedCount} live)`}
+            value={storeRows.length.toLocaleString()}
+            trendLabel={storesTrend.label}
+            trend={storesTrend.trend}
+          />
+          <KpiCard
+            label={`Orders (${pendingCount} pending)`}
+            value={orders.length.toLocaleString()}
+            trendLabel={ordersTrend.label}
+            trend={ordersTrend.trend}
+          />
+        </div>
       </div>
 
       <div>

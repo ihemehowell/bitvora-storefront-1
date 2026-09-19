@@ -1,27 +1,43 @@
+'use client'
+
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 import { Card } from '@bitvora/ui/src/Card'
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 
 type DayRevenue = { label: string; total: number }
 
-export function RevenueChart({ data }: { data: DayRevenue[] }) {
-  const max = Math.max(...data.map((d) => d.total), 1)
+const chartConfig = {
+  total: {
+    label: 'Revenue',
+    color: 'var(--color-indigo-600)',
+  },
+} satisfies ChartConfig
 
+export function RevenueChart({ data }: { data: DayRevenue[] }) {
   return (
     <Card>
       <p className="font-display text-sm font-semibold mb-4">Revenue, last 7 days</p>
-      <div className="flex items-end justify-between gap-2 h-28">
-        {data.map((d) => (
-          <div key={d.label} className="flex-1 flex flex-col items-center gap-1.5">
-            <div className="w-full flex items-end h-24">
-              <div
-                className="w-full rounded-t-md bg-indigo-600 transition-all"
-                style={{ height: `${Math.max((d.total / max) * 100, d.total > 0 ? 6 : 2)}%` }}
-                title={`₦${d.total.toLocaleString()}`}
+      <ChartContainer config={chartConfig} className="h-28 w-full aspect-auto">
+        <BarChart data={data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} fontSize={10} />
+          <ChartTooltip
+            cursor={false}
+            content={
+              <ChartTooltipContent
+                hideLabel
+                formatter={(value) => `₦${Number(value).toLocaleString()}`}
               />
-            </div>
-            <span className="text-[10px] text-ink/40 font-medium">{d.label}</span>
-          </div>
-        ))}
-      </div>
+            }
+          />
+          <Bar dataKey="total" fill="var(--color-total)" radius={4} />
+        </BarChart>
+      </ChartContainer>
     </Card>
   )
 }

@@ -1,5 +1,6 @@
 import { Card } from '@bitvora/ui/src/Card'
 import { createAdminClient } from '../../../lib/supabase/admin'
+import { RevenueBarChart } from './RevenueBarChart'
 
 export default async function OwnerRevenuePage() {
   const admin = createAdminClient()
@@ -22,23 +23,13 @@ export default async function OwnerRevenuePage() {
     return { label: dayStart.getDate(), total }
   })
 
-  const max = Math.max(...dailyRevenue.map((d) => d.total), 1)
   const totalRevenue30d = dailyRevenue.reduce((sum, d) => sum + d.total, 0)
 
   return (
     <Card>
       <p className="text-xs text-ink/50 font-medium mb-1">Platform revenue · last 30 days</p>
       <p className="font-mono text-3xl font-semibold mb-5">₦{totalRevenue30d.toLocaleString()}</p>
-      <div className="flex items-end justify-between gap-1 h-32">
-        {dailyRevenue.map((d, i) => (
-          <div key={i} className="flex-1 flex items-end h-28" title={`Day ${d.label}: ₦${d.total.toLocaleString()}`}>
-            <div
-              className="w-full rounded-t-sm bg-indigo-600"
-              style={{ height: `${Math.max((d.total / max) * 100, d.total > 0 ? 4 : 1)}%` }}
-            />
-          </div>
-        ))}
-      </div>
+      <RevenueBarChart data={dailyRevenue} />
     </Card>
   )
 }
