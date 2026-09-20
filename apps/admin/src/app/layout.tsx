@@ -4,6 +4,7 @@ import { createClient } from "../lib/supabase/server";
 import { Shell } from "../components/Shell";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/next"
 
 const spaceGroteskHeading = Space_Grotesk({subsets:['latin'],variable:'--font-heading'});
 
@@ -30,10 +31,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         isOwner={!!merchant?.is_owner}
         merchantName={merchant?.full_name}
         avatarUrl={merchant?.avatar_url}
-      >
-  {children}
-</Shell>
+          >
+      {children}
+      </Shell>
+      <Analytics/>
       </body>
     </html>
+    
   );
 }

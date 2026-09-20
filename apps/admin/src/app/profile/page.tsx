@@ -36,7 +36,7 @@ export default async function ProfilePage() {
   const initial = merchant?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-5xl">
       <h1 className="text-2xl font-display font-semibold mb-6">Profile</h1>
 
       <Card className="p-0 overflow-hidden mb-4">
