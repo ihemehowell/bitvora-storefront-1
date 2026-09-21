@@ -1,11 +1,11 @@
-
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Card } from '@bitvora/ui/src/Card'
 import { ArrowLeft } from 'switch-icons'
 import { SuspendButton } from './SuspendButton'
-import { createAdminClient } from '../../../../lib/supabase/admin'
 import { Sparkline } from '../../SparkLine'
+import { computeTrend } from '../../../../lib/computeTrend'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function MerchantDetailPage({ params }: { params: Promise<{ merchantId: string }> }) {
   const { merchantId } = await params
@@ -33,8 +33,23 @@ export default async function MerchantDetailPage({ params }: { params: Promise<{
   const activeOrders = orderRows.filter((o) => o.status !== 'cancelled')
   const totalRevenue = activeOrders.reduce((sum, o) => sum + Number(o.total), 0)
 
-  const startOfToday = new Date()
+  const now = new Date()
+  const startOfToday = new Date(now)
   startOfToday.setHours(0, 0, 0, 0)
+  const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(startOfToday.getTime() - 14 * 24 * 60 * 60 * 1000)
+
+  const revenueThisWeek = activeOrders
+    .filter((o) => new Date(o.created_at) >= sevenDaysAgo)
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  const revenueLastWeek = activeOrders
+    .filter((o) => {
+      const t = new Date(o.created_at)
+      return t >= fourteenDaysAgo && t < sevenDaysAgo
+    })
+    .reduce((sum, o) => sum + Number(o.total), 0)
+  const revenueTrend = computeTrend(revenueThisWeek, revenueLastWeek, 'vs last week')
+
   const spark = Array.from({ length: 14 }).map((_, i) => {
     const dayStart = new Date(startOfToday.getTime() - (13 - i) * 24 * 60 * 60 * 1000)
     const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
@@ -74,11 +89,25 @@ export default async function MerchantDetailPage({ params }: { params: Promise<{
 
         <div className="space-y-6">
           <Card>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-start justify-between mb-2">
               <p className="text-xs text-ink/50 font-medium">Total revenue</p>
-              <Sparkline data={spark} color="var(--color-marigold-500)" />
+              {revenueTrend.label && (
+                <span
+                  className={`text-xs font-medium ${
+                    revenueTrend.trend === 'up'
+                      ? 'text-palm-600'
+                      : revenueTrend.trend === 'down'
+                        ? 'text-pepper-600'
+                        : 'text-ink/40'
+                  }`}
+                >
+                  {revenueTrend.trend === 'up' ? '↑ ' : revenueTrend.trend === 'down' ? '↓ ' : ''}
+                  {revenueTrend.label}
+                </span>
+              )}
             </div>
-            <p className="font-mono text-2xl font-semibold">₦{totalRevenue.toLocaleString()}</p>
+            <p className="font-mono text-2xl font-semibold mb-3">₦{totalRevenue.toLocaleString()}</p>
+            <Sparkline data={spark} color="var(--color-marigold-500)" />
           </Card>
 
           <div>
@@ -115,4 +144,4 @@ export default async function MerchantDetailPage({ params }: { params: Promise<{
       </div>
     </div>
   )
-}
+} 

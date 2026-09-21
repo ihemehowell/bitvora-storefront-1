@@ -24,12 +24,12 @@ export default async function OrderDetailPage({
   if (!order) notFound()
 
   return (
-    <div className="max-w-2xl">
+      <div className="">
       <Link href={`/stores/${storeId}/orders`} className="flex items-center gap-1.5 text-sm text-ink/50 hover:text-ink mb-4">
         <ArrowLeft className="w-4 h-4" />
         Back to orders
       </Link>
-
+    <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-display font-semibold">{order.customer_name}</h1>
         <StatusBadge status={order.status} />
@@ -78,6 +78,7 @@ export default async function OrderDetailPage({
           </div>
         </div>
       </Card>
+    </div>
     </div>
   )
 }

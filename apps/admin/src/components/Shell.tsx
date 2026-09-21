@@ -45,11 +45,7 @@ export function Shell({
           <button onClick={() => setSidebarOpen(true)} className="p-1.5 -ml-1.5 text-ink/70">
             <IconMenu2 className="w-5 h-5" stroke={1.75} />
           </button>
-          <div className="flex items-center gap-1.5">
-            <Storefront className="w-4 h-4 text-marigold-500" />
-            <p className="font-display font-semibold text-sm">Bitvora Storefront</p>
-          </div>
-        </div>
+         </div>
 
         {topBar}
 

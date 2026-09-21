@@ -25,10 +25,10 @@ const TREND_PREFIX: Record<Trend, string> = {
 export function KpiCard({ label, value, trendLabel, trend = 'flat', className = '', ...props }: KpiCardProps) {
   return (
     <Card className={`p-4.5 ${className}`} {...props}>
-      <p className="text-xs text-ink/50 font-medium mb-2.5">{label}</p>
+      <p className="text-xs text-ink/50 font-medium mb-2.5 truncate">{label}</p>
       <p className="font-display text-2xl font-semibold mb-1.5">{value}</p>
       {trendLabel && (
-        <p className={`text-xs font-medium ${TREND_STYLES[trend]}`}>
+        <p className={`text-xs font-medium truncate ${TREND_STYLES[trend]}`} >
           {TREND_PREFIX[trend]}{trendLabel}
         </p>
       )}
