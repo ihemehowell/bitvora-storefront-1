@@ -112,19 +112,8 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
 
   return (
     <div className="max-w-5xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
         <h1 className="text-2xl font-display font-semibold">{store.name}</h1>
-        <div className="flex  items-center gap-2">
-        <span className="text-xs font-mono text-ink/60 bg-sand-100 rounded-full px-2.5 py-1">/{store.slug}</span>
-        <span className="text-xs font-medium text-ink/60 bg-sand-100 rounded-full px-2.5 py-1 capitalize">{store.industry}</span>
-        {store.is_published && (
-          <span className="flex items-center gap-1.5 text-xs font-medium text-palm-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-palm-600" /> Live
-          </span>
-        )}
-      </div>
-      </div>
         <div className="flex flex-wrap items-center gap-2">
           <a
             href={`${STOREFRONT_URL}/${store.slug}`}
@@ -142,7 +131,15 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
           </Link>
         </div>
       </div>
-      
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <span className="text-xs font-mono text-ink/60 bg-sand-100 rounded-full px-2.5 py-1">/{store.slug}</span>
+        <span className="text-xs font-medium text-ink/60 bg-sand-100 rounded-full px-2.5 py-1 capitalize">{store.industry}</span>
+        {store.is_published && (
+          <span className="flex items-center gap-1.5 text-xs font-medium text-palm-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-palm-600" /> Live
+          </span>
+        )}
+      </div>
 
       <OnboardingProgress storeId={store.id} items={checklistItems} />
 
@@ -170,7 +167,7 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
 
         <RevenueChart data={dailyRevenue} />
 
-        <div className="grid grid-cols-3 gap-3 mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
           <KpiCard
             label="Orders today"
             value={ordersToday.toLocaleString()}

@@ -84,7 +84,7 @@ export default async function OwnerOverviewPage() {
     <div>
       <div className="mb-8">
         <Card className="p-5 mb-3">
-          <div className="flex items-start justify-between mb-1">
+          <div className="flex flex-wrap items-start justify-between gap-1 mb-1">
             <p className="text-xs text-ink/50 font-medium">Total GMV</p>
             {gmvTrend.label && (
               <span
@@ -101,11 +101,11 @@ export default async function OwnerOverviewPage() {
               </span>
             )}
           </div>
-          <p className="font-display text-4xl font-semibold mb-3">₦{totalGMV.toLocaleString()}</p>
+          <p className="font-display text-3xl sm:text-4xl font-semibold mb-3">₦{totalGMV.toLocaleString()}</p>
           <Sparkline data={gmvSpark} color="var(--color-marigold-500)" />
         </Card>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <KpiCard
             label="Merchants"
             value={merchantRows.length.toLocaleString()}
@@ -133,15 +133,15 @@ export default async function OwnerOverviewPage() {
           {(recentStores ?? []).map((store, i) => {
             const isInternal = (store.merchants as unknown as { is_owner: boolean }).is_owner
             return (
-              <div key={store.id} className={`flex items-center justify-between px-4 py-3 ${i !== (recentStores?.length ?? 0) - 1 ? 'border-b border-sand-200' : ''}`}>
-                <div>
+              <div key={store.id} className={`flex items-center justify-between gap-3 px-4 py-3 ${i !== (recentStores?.length ?? 0) - 1 ? 'border-b border-sand-200' : ''}`}>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">{store.name}</p>
-                    {isInternal && <span className="text-[10px] font-medium rounded-full px-2 py-0.5 bg-indigo-50 text-indigo-600">Internal</span>}
+                    <p className="text-sm font-medium truncate">{store.name}</p>
+                    {isInternal && <span className="shrink-0 text-[10px] font-medium rounded-full px-2 py-0.5 bg-indigo-50 text-indigo-600">Internal</span>}
                   </div>
-                  <p className="text-xs text-ink/50 font-mono">/{store.slug}</p>
+                  <p className="text-xs text-ink/50 font-mono truncate">/{store.slug}</p>
                 </div>
-                <span className={`text-[11px] font-medium rounded-full px-2 py-0.5 ${store.is_published ? 'bg-palm-50 text-palm-600' : 'bg-sand-100 text-ink/50'}`}>
+                <span className={`shrink-0 text-[11px] font-medium rounded-full px-2 py-0.5 ${store.is_published ? 'bg-palm-50 text-palm-600' : 'bg-sand-100 text-ink/50'}`}>
                   {store.is_published ? 'Live' : 'Draft'}
                 </span>
               </div>

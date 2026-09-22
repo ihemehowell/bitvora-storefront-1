@@ -36,9 +36,9 @@ export default async function CustomizePage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="max-w-5xl">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-display font-semibold mb-1">Customize</h1>
+          <h1 className="text-xl sm:text-2xl font-display font-semibold mb-1">Customize</h1>
           <p className="text-ink/50 text-sm">Brand color and homepage content for {store.name}.</p>
         </div>
         <PublishToggle storeId={store.id} isPublished={store.is_published} />

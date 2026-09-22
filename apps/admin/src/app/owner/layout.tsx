@@ -1,4 +1,3 @@
-
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '../../lib/supabase/server'
@@ -20,16 +19,19 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
   if (!merchant?.is_owner) redirect('/')
 
   return (
-    <div className="max-w-7xl mx-0 auto lg:mx-auto backdrop:blur-2xl  rounded-lg p-2 lg:p-4 border border-sand-200">
-      <h1 className="text-2xl font-display font-semibold mb-1">Platform</h1>
+    <div className="max-w-7xl mx-0 lg:mx-auto rounded-lg p-3 sm:p-4 border border-sand-200">
+      <h1 className="text-xl sm:text-2xl font-display font-semibold mb-1">Platform</h1>
       <p className="text-ink/50 text-sm mb-6">Bitvora Storefront — all merchants and stores.</p>
 
-      <div className="flex gap-1 mb-6 border-b border-sand-200">
+      <div
+        className="flex gap-1 mb-6 border-b border-sand-200 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: 'none' }}
+      >
         {TABS.map((tab) => (
           <Link
             key={tab.href}
             href={tab.href}
-            className="px-3 py-2 text-sm text-ink/60 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600 -mb-px transition-colors"
+            className="shrink-0 whitespace-nowrap px-3 py-2 text-sm text-ink/60 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600 -mb-px transition-colors"
           >
             {tab.label}
           </Link>

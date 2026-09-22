@@ -274,8 +274,8 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0(typescript@5.9.3)
       switch-icons:
-        specifier: ^0.2.0
-        version: 0.2.0(react@19.2.8)
+        specifier: ^1.0.0
+        version: 1.0.0(react@19.2.8)
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
@@ -306,7 +306,7 @@ importers:
         version: 9.39.5(jiti@2.7.0)
       eslint-config-next:
         specifier: 16.3.1
-        version: 16.3.1(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
+        version: 16.3.1(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.3.3
@@ -370,7 +370,7 @@ importers:
         version: 9.39.5(jiti@2.7.0)
       eslint-config-next:
         specifier: 16.3.1
-        version: 16.3.1(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
+        version: 16.3.1(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.3.3
@@ -425,7 +425,7 @@ importers:
         version: 9.39.5(jiti@2.7.0)
       eslint-config-next:
         specifier: 16.3.3
-        version: 16.3.3(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
+        version: 16.3.3(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.3.3
@@ -3775,6 +3775,11 @@ packages:
     peerDependencies:
       react: '>=18'
 
+  switch-icons@1.0.0:
+    resolution: {integrity: sha512-3IK9BW3p/vmV+2iV1yirjTayyJDvYUpUdy65mt8+bBemSjQ/7nNluvctXglr1ISVOpGYVQj1VIrVk5XuoBhBGA==}
+    peerDependencies:
+      react: '>=18'
+
   systeminformation@5.33.11:
     resolution: {integrity: sha512-CNGk+882EQbsbPzaoxeBcYyx+nk0uTj5JzW8w0EXGSCazndNRAh9SE0V5tyMbdONGKilbIBJsyskF4WmZDk7uA==}
     engines: {node: '>=10.0.0'}
@@ -5632,7 +5637,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@16.3.1(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3):
+  eslint-config-next@16.3.1(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3):
     dependencies:
       '@next/eslint-plugin-next': 16.3.1(eslint@9.39.5(jiti@2.7.0))
       eslint: 9.39.5(jiti@2.7.0)
@@ -5652,7 +5657,7 @@ snapshots:
       - eslint-plugin-import-x
       - supports-color
 
-  eslint-config-next@16.3.3(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3):
+  eslint-config-next@16.3.3(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3):
     dependencies:
       '@next/eslint-plugin-next': 16.3.3(eslint@9.39.5(jiti@2.7.0))
       eslint: 9.39.5(jiti@2.7.0)
@@ -7302,6 +7307,10 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   switch-icons@0.2.0(react@19.2.8):
+    dependencies:
+      react: 19.2.8
+
+  switch-icons@1.0.0(react@19.2.8):
     dependencies:
       react: 19.2.8
 

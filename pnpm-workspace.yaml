@@ -3,3 +3,5 @@ packages:
   - "packages/*"
 allowBuilds:
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - switch-icons@1.0.0

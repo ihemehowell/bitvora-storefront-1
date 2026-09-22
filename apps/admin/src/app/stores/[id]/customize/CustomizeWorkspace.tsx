@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { Storefront } from 'switch-icons'
 import { Button } from '@bitvora/ui/src/Button'
 import { Label } from '@bitvora/ui/src/Label'
 import { Input } from '@bitvora/ui/src/Input'
 import { ImageField } from './ImageField'
+import { IconChevronLeft, IconChevronRight, IconEye, IconPencil } from '@tabler/icons-react'
 
 import {
   saveBrandColor, saveHeroSection, saveBannerGridSection, saveCtaBannerSection,
   saveTypography, saveLogo, saveGridDensity,
-  saveAboutSection, saveSocialLinks, toggleSectionVisibility, reorderSection,saveBankDetails,
+  saveAboutSection, saveSocialLinks, toggleSectionVisibility, reorderSection, saveBankDetails,
 } from './actions'
 import { Check } from 'switch-icons'
 import { FONT_PAIRINGS, SCALES } from '../../../../lib/font-pairings'
@@ -64,7 +65,7 @@ export function CustomizeWorkspace({
   const [gridDensity, setGridDensity] = useState(initialGridDensity)
   const [about, setAbout] = useState(initialAbout)
   const [social, setSocial] = useState(initialSocial)
-  const [sections, setSections] = useState(sectionsMeta)  
+  const [sections, setSections] = useState(sectionsMeta)
   const [tab, setTab] = useState<Tab>('brand')
   const [color, setColor] = useState(initialColor)
   const [hero, setHero] = useState(initialHero)
@@ -74,7 +75,33 @@ export function CustomizeWorkspace({
   const [savedTab, setSavedTab] = useState<Tab | null>(null)
   const [bankDetails, setBankDetails] = useState(initialBankDetails)
 
-    function save() {
+  // Mobile-only: which pane is showing. Desktop always shows both.
+  const [mobileView, setMobileView] = useState<'edit' | 'preview'>('edit')
+
+  // Tab bar scroll affordance — edge fades + arrows appear only when there's
+  // actually more to scroll to in that direction.
+  const tabsScrollRef = useRef<HTMLDivElement>(null)
+  const [showLeftFade, setShowLeftFade] = useState(false)
+  const [showRightFade, setShowRightFade] = useState(false)
+
+  function updateFades() {
+    const el = tabsScrollRef.current
+    if (!el) return
+    setShowLeftFade(el.scrollLeft > 4)
+    setShowRightFade(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }
+
+  useEffect(() => {
+    updateFades()
+    window.addEventListener('resize', updateFades)
+    return () => window.removeEventListener('resize', updateFades)
+  }, [])
+
+  function scrollTabs(dir: 'left' | 'right') {
+    tabsScrollRef.current?.scrollBy({ left: dir === 'left' ? -160 : 160, behavior: 'smooth' })
+  }
+
+  function save() {
     setSavedTab(null)
     startTransition(async () => {
       if (tab === 'brand') await saveBrandColor(storeId, color)
@@ -107,21 +134,53 @@ export function CustomizeWorkspace({
   }
 
   return (
-    <div className="grid lg:grid-cols-[600px_1fr] gap-6">
-      {/* Left: tabbed settings panel */}
-      <div>
-        <div className="flex gap-1 mb-4 border-b border-sand-200">
-          {TABS.map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-3 py-2 text-sm capitalize border-b-2 -mb-px transition-colors ${
-                tab === t ? 'border-indigo-600 text-indigo-600 font-medium' : 'border-transparent text-ink/50 hover:text-ink'
-              }`}
-            >
-              {t === 'collections' ? 'Collections' : t}
-            </button>
-          ))}
+    <div className="grid lg:grid-cols-[400px_1fr] gap-4 lg:gap-6">
+      {/* Left: tabbed settings panel — hidden on mobile while previewing */}
+      <div className={`min-w-0 ${mobileView === 'preview' ? 'hidden lg:block' : ''}`}>
+        <div className="relative mb-4">
+          <div
+            ref={tabsScrollRef}
+            onScroll={updateFades}
+            className="flex gap-1 border-b border-sand-200 overflow-x-auto snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {TABS.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`shrink-0 snap-start whitespace-nowrap px-3 py-2 text-sm capitalize border-b-2 -mb-px transition-colors ${
+                  tab === t ? 'border-indigo-600 text-indigo-600 font-medium' : 'border-transparent text-ink/50 hover:text-ink'
+                }`}
+              >
+                {t === 'collections' ? 'Collections' : t}
+              </button>
+            ))}
+          </div>
+
+          {showLeftFade && (
+            <>
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent" />
+              <button
+                onClick={() => scrollTabs('left')}
+                aria-label="Scroll tabs left"
+                className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
+              >
+                <IconChevronLeft className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
+          {showRightFade && (
+            <>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent" />
+              <button
+                onClick={() => scrollTabs('right')}
+                aria-label="Scroll tabs right"
+                className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
+              >
+                <IconChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
         </div>
 
         {tab === 'brand' && (
@@ -213,7 +272,7 @@ export function CustomizeWorkspace({
           </div>
         )}
 
-                {tab === 'design' && (
+        {tab === 'design' && (
           <div className="space-y-5">
             <div>
               <Label>Store logo</Label>
@@ -353,13 +412,17 @@ export function CustomizeWorkspace({
           </div>
         )}
 
-        <Button onClick={save} disabled={isPending} className="w-full mt-5">
+        {/* Desktop save button — mobile uses the sticky bar below instead */}
+        <Button onClick={save} disabled={isPending} className="hidden lg:inline-flex w-full mt-5">
           {isPending ? 'Saving...' : savedTab === tab ? 'Saved ✓' : 'Save changes'}
         </Button>
+
+        {/* Room for the fixed mobile bar so content isn't hidden behind it */}
+        <div className="h-20 lg:hidden" />
       </div>
 
-      {/* Right: live preview */}
-      <div className="lg:sticky lg:top-6 self-start">
+      {/* Right: live preview — hidden on mobile while editing */}
+      <div className={`lg:sticky lg:top-6 self-start ${mobileView === 'edit' ? 'hidden lg:block' : ''}`}>
         <p className="text-xs font-medium text-ink/50 uppercase tracking-wide mb-2">Live preview</p>
         <div className="border border-sand-200 rounded-2xl overflow-hidden bg-white">
           <div className="border-b border-sand-100 px-4 py-2.5 flex items-center gap-1.5">
@@ -434,6 +497,34 @@ export function CustomizeWorkspace({
             )}
           </div>
         </div>
+      </div>
+
+      {/* Mobile-only: sticky Edit/Preview toggle + Save, pinned to bottom */}
+      <div
+        className="lg:hidden fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-sand-200 bg-white/95 backdrop-blur px-4 py-2.5"
+        style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}
+      >
+        <div className="flex flex-1 rounded-lg bg-sand-100 p-1">
+          <button
+            onClick={() => setMobileView('edit')}
+            className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-colors ${
+              mobileView === 'edit' ? 'bg-white shadow-sm text-indigo-600' : 'text-ink/50'
+            }`}
+          >
+            <IconPencil className="w-3.5 h-3.5" stroke={1.75} /> Edit
+          </button>
+          <button
+            onClick={() => setMobileView('preview')}
+            className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-colors ${
+              mobileView === 'preview' ? 'bg-white shadow-sm text-indigo-600' : 'text-ink/50'
+            }`}
+          >
+            <IconEye className="w-3.5 h-3.5" stroke={1.75} /> Preview
+          </button>
+        </div>
+        <Button onClick={save} disabled={isPending} className="shrink-0 px-4">
+          {isPending ? 'Saving...' : savedTab === tab ? 'Saved ✓' : 'Save'}
+        </Button>
       </div>
     </div>
   )
