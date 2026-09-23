@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { fadeUp, slideInLeft, slideInRight, staggerContainer, viewport } from "../lib/motion";
+import { IconArrowRight } from "@tabler/icons-react";
 
 export function About() {
   return (
@@ -27,11 +28,11 @@ export function About() {
             No investors telling us what matters. Just a product built to solve a real problem for real Nigerian merchants.
           </p>
         </motion.div>
-        <motion.div variants={slideInRight} className="rounded-2xl bg-indigo-900 p-8 text-paper">
-          <p className="font-display text-2xl font-semibold mb-3">Our promise</p>
+        <motion.div variants={slideInRight} className="rounded-2xl bg-indigo-900 p-10 text-paper">
+          <p className="font-display text-2xl font-semibold mb-3 pl-5">Our promise</p>
           <motion.ul
             variants={staggerContainer(0.08)}
-            className="space-y-3 text-[14.5px] text-paper/75"
+            className="space-y-5 text-[14.5px] text-paper/75"
           >
             {[
               "Your store looks like your brand, always.",
@@ -39,7 +40,7 @@ export function About() {
               "Fast, honest, and no fake numbers.",
             ].map((line) => (
               <motion.li key={line} variants={fadeUp} className="flex gap-2">
-                <span className="text-marigold-500">→</span> {line}
+                <span className="text-marigold-500"><IconArrowRight  className="w-5 h-5"  /></span> {line}
               </motion.li>
             ))}
           </motion.ul>
