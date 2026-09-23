@@ -1,4 +1,9 @@
 import Image from 'next/image'
+import Link from 'next/link'
+
+const LINKS = [
+  { href: '/pricing', label: 'Pricing' },
+]
 
 export function Nav() {
   return (
@@ -17,7 +22,17 @@ export function Nav() {
           </span>
         </div>
 
-        
+        <nav className="hidden md:flex items-center gap-6">
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-ink-soft hover:text-ink transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         <a
           href="https://bitvora-admin.vercel.app/signup"

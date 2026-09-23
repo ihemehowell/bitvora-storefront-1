@@ -1,17 +1,22 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { Card } from '@bitvora/ui/src/Card'
+import { KpiCard } from '@bitvora/ui/src/KpiCard'
 import { Button } from '@bitvora/ui/src/Button'
 import { createClient } from '../lib/supabase/server'
 import { IconChevronRight } from '@tabler/icons-react'
+import { StoresGrid } from './StoresGrid'
+
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: merchant } = await supabase
     .from('merchants')
     .select('id, full_name')
-    .eq('user_id', user?.id)
+    .eq('user_id', user.id)
     .single()
 
   const { data: stores } = await supabase
@@ -19,6 +24,38 @@ export default async function DashboardPage() {
     .select('*')
     .eq('merchant_id', merchant?.id)
     .order('created_at', { ascending: false })
+
+  const storeRows = stores ?? []
+  const storeIds = storeRows.map((s) => s.id)
+
+  const { data: orders } = storeIds.length
+    ? await supabase.from('orders').select('store_id, total, status, created_at').in('store_id', storeIds)
+    : { data: [] }
+
+  const orderRows = orders ?? []
+  const activeOrders = orderRows.filter((o) => o.status !== 'cancelled')
+
+  const startOfToday = new Date()
+  startOfToday.setHours(0, 0, 0, 0)
+  const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+  const enrichedStores = storeRows.map((store) => {
+    const storeOrders = activeOrders.filter(
+      (o) => o.store_id === store.id && new Date(o.created_at) >= sevenDaysAgo
+    )
+    return {
+      id: store.id,
+      name: store.name,
+      slug: store.slug,
+      industry: store.industry,
+      is_published: store.is_published,
+      ordersThisWeek: storeOrders.length,
+      revenueThisWeek: storeOrders.reduce((sum, o) => sum + Number(o.total), 0),
+    }
+  })
+
+  const liveCount = storeRows.filter((s) => s.is_published).length
+  const combinedRevenueThisWeek = enrichedStores.reduce((sum, s) => sum + s.revenueThisWeek, 0)
 
   return (
     <div className="w-full">
@@ -31,7 +68,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {(!stores || stores.length === 0) ? (
+      {storeRows.length === 0 ? (
         <Card className="text-center py-14 relative overflow-hidden">
           <div
             className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -46,30 +83,15 @@ export default async function DashboardPage() {
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {stores.map((store) => (
-            <Link key={store.id} href={`/stores/${store.id}`}>
-              <Card className="hover:border-indigo-600 transition-colors h-full">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="font-display font-medium text-lg truncate">{store.name}</p>
-                    <p className="text-sm text-ink/50 font-mono truncate">/{store.slug}</p>
-                  </div>
-                  <span
-                    className={`shrink-0 text-xs rounded-full px-2.5 py-1 font-medium ${
-                      store.is_published
-                        ? 'bg-palm-50 text-palm-600'
-                        : 'bg-sand-100 text-ink/50'
-                    }`}
-                  >
-                    {store.is_published ? 'Published' : 'Draft'}
-                  </span>
-                </div>
-                <p className="text-sm text-ink/50 mt-2 capitalize">{store.industry}</p>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <KpiCard label="Total stores" value={storeRows.length.toLocaleString()} />
+            <KpiCard label="Live" value={liveCount.toLocaleString()} />
+            <KpiCard label="Revenue · this week" value={`₦${combinedRevenueThisWeek.toLocaleString()}`} />
+          </div>
+
+          <StoresGrid stores={enrichedStores} />
+        </>
       )}
     </div>
   )
