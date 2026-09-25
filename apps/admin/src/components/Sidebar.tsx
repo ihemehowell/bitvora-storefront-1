@@ -104,7 +104,7 @@ function GroupNav({
           <Icon className="w-4 h-4 shrink-0" />
           {label}
         </span>
-        <IconChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${open ? '' : '-rotate-90'}`} stroke={1.75} />
+        <IconChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform  ${open ? '' : '-rotate-90'}`} stroke={1.75} />
       </button>
       {open && (
         <div className="mt-0.5 ml-3.5 pl-3 border-l border-white/10 space-y-0.5">
@@ -190,7 +190,7 @@ export function Sidebar({
         {/* Collapse toggle — floats on the edge */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="hidden lg:flex absolute -right-3 top-8 z-50 w-6 h-6 rounded-full bg-white shadow-md items-center justify-center text-indigo-900 hover:bg-sand-100 transition-colors"
+          className="hidden lg:flex absolute -right-3 top-8 z-50 w-6 h-6 rounded-full bg-white shadow-md items-center justify-center text-forground hover:bg-sand-100 transition-colors"
         >
           <IconChevronRight className={`w-3.5 h-3.5 transition-transform ${collapsed ? '' : 'rotate-180'}`} stroke={2} />
         </button>

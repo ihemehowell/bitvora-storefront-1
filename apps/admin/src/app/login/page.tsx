@@ -56,7 +56,7 @@ export default function LoginPage() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="px-2 py-3"/>
         </div>
-        <Button type="submit" disabled={loading} className="w-full bg-ink">
+        <Button type="submit" disabled={loading} className="w-full bg-ink ">
           {loading ? 'Logging in...' : 'Log in'}
         </Button>
       </form>

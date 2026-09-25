@@ -1,8 +1,12 @@
+import Script from 'next/script'
+
 const THEME_STORAGE_KEY = 'bitvora-admin-theme'
 
-// Runs before React hydrates so there's no flash of the wrong theme.
-// Kept as a tiny inline script (not a useEffect) specifically so it executes
-// pre-paint. Only ever rendered inside apps/admin's <head>.
+// Runs before hydration so there's no flash of the wrong theme.
+// strategy="beforeInteractive" is what makes this safe to use as JSX here —
+// Next.js injects it into <head> and runs it pre-hydration without React
+// trying to reconcile it as a normal DOM child (which is what throws the
+// "script tag while rendering" warning with a plain <script> element).
 const script = `
 (function() {
   try {
@@ -14,5 +18,5 @@ const script = `
 `
 
 export function ThemeScript() {
-  return <script dangerouslySetInnerHTML={{ __html: script }} />
+  return <Script id="theme-script" strategy="beforeInteractive">{script}</Script>
 }

@@ -1,5 +1,14 @@
 @source "../../packages/ui/src";
 
+/*
+ * Pinned here (not left to Tailwind's default) so `dark:` always means
+ * "inside a .dark ancestor" in every app that imports this file — never
+ * `prefers-color-scheme`. Only apps/admin ever adds the `dark` class to
+ * <html>, so apps/website (which also imports this file for its own
+ * tokens) stays completely unaffected by a user's OS dark-mode setting.
+ */
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   --color-paper: #faf7f1;
   --color-ink: #1e1b16;
@@ -33,4 +42,41 @@
   --font-mono: "IBM Plex Mono", monospace;
 
   --radius-card: 0.875rem;
+}
+
+/*
+ * Dark-mode token overrides. Same variable names as above, redefined under
+ * `.dark` — every utility built from them (bg-sand-100, text-ink,
+ * bg-indigo-600, hover:bg-indigo-700, etc.) flips automatically, in any
+ * component anywhere in the monorepo that uses these tokens, with zero
+ * per-component work required. Explicit `dark:` classes in a component
+ * (like Button.tsx) are only needed when a variant should diverge from a
+ * simple 1:1 token swap.
+ */
+.dark {
+  --color-paper: #15130f;
+  --color-paper-dim: #1c1914;
+  --color-ink: #f2ede2;
+  --color-ink-soft: #a89f8d;
+
+  --color-indigo-900: #0e1330;
+  --color-indigo-950: #070a1d;
+  --color-indigo-700: #38499f;
+  --color-indigo-600: #4d5fd1;
+  --color-indigo-50: #1a2047;
+
+  --color-marigold-400: #f0bd7c;
+  --color-marigold-500: #efb257;
+  --color-marigold-50: #3a2c14;
+
+  --color-palm-600: #5cab82;
+  --color-palm-50: #12301f;
+
+  --color-pepper-600: #e2686c;
+  --color-pepper-50: #391416;
+
+  --color-sand-300: #46402f;
+  --color-sand-400: #5c5344;
+  --color-sand-200: #322d25;
+  --color-sand-100: #1e1b16;
 }

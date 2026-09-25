@@ -1,7 +1,18 @@
+'use client'
+
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Card } from '@bitvora/ui/src/Card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { StatusBadge } from './orders/StatusBadge'
-import { Receipt } from 'switch-icons'
+import { ArrowRight, Receipt } from 'switch-icons'
 
 type Order = {
   id: string
@@ -11,12 +22,14 @@ type Order = {
 }
 
 export function RecentOrders({ storeId, orders }: { storeId: string; orders: Order[] }) {
+  const router = useRouter()
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-display text-sm font-semibold">Recent orders</h2>
         <Link href={`/stores/${storeId}/orders`} className="text-xs font-medium text-indigo-600">
-          View all →
+          View all <ArrowRight className="w-3 h-3 inline-block ml-1" />
         </Link>
       </div>
 
@@ -27,21 +40,32 @@ export function RecentOrders({ storeId, orders }: { storeId: string; orders: Ord
         </Card>
       ) : (
         <Card className="p-0 overflow-hidden">
-          {orders.map((order, i) => (
-            <Link
-              key={order.id}
-              href={`/stores/${storeId}/orders/${order.id}`}
-              className={`flex items-center justify-between px-4 py-3 hover:bg-sand-100/60 transition-colors ${
-                i !== orders.length - 1 ? 'border-b border-sand-200' : ''
-              }`}
-            >
-              <p className="text-sm font-medium">{order.customer_name}</p>
-              <div className="flex items-center gap-3">
-                <p className="font-mono text-sm">₦{Number(order.total).toLocaleString()}</p>
-                <StatusBadge status={order.status} />
-              </div>
-            </Link>
-          ))}
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Customer</TableHead>
+                <TableHead className="text-center">Total</TableHead>
+                <TableHead className="text-right">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => (
+                <TableRow
+                  key={order.id}
+                  className="cursor-pointer hover:bg-sand-100/60 transition-colors"
+                  onClick={() => router.push(`/stores/${storeId}/orders/${order.id}`)}
+                >
+                  <TableCell className="font-medium">{order.customer_name}</TableCell>
+                  <TableCell className="text-center font-mono">
+                    ₦{Number(order.total).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <StatusBadge status={order.status} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Card>
       )}
     </div>

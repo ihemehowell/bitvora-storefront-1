@@ -65,8 +65,8 @@ export function Pricing() {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section className="py-24 md:py-32">
-      <div className="mx-auto max-w-[1240px] px-8">
+    <section className="py-16 sm:py-24 md:py-32">
+      <div className="mx-auto max-w-[1240px] px-4 sm:px-6 md:px-8">
         <motion.div
           variants={staggerContainer(0.08)}
           initial="hidden"
@@ -80,10 +80,10 @@ export function Pricing() {
           >
             Pricing
           </motion.span>
-          <motion.h1 variants={fadeUp} className="mb-5 font-display text-3xl font-bold md:text-5xl leading-tight">
+          <motion.h1 variants={fadeUp} className="mb-5 font-display text-2xl font-bold leading-tight sm:text-3xl md:text-5xl">
             Simple pricing, no free tier to outgrow.
           </motion.h1>
-          <motion.p variants={fadeUp} className="text-[16px] leading-relaxed text-ink-soft">
+          <motion.p variants={fadeUp} className="text-[15px] leading-relaxed text-ink-soft sm:text-[16px]">
             Every plan gets a fully branded storefront, WhatsApp ordering, and Nigeria-first checkout. Start on a 14-day free trial — no card required to try it out.
           </motion.p>
         </motion.div>
@@ -94,7 +94,7 @@ export function Pricing() {
           initial="hidden"
           whileInView="show"
           viewport={viewport}
-          className="flex items-center justify-center gap-3 mb-14"
+          className="mb-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:mb-14"
         >
           <span className={`text-sm font-medium ${!annual ? "text-ink" : "text-ink-soft"}`}>Monthly</span>
           <button
@@ -127,7 +127,7 @@ export function Pricing() {
               <motion.div
                 key={plan.name}
                 variants={fadeUp}
-                className={`relative rounded-2xl border p-7 flex flex-col ${
+                className={`relative min-w-0 rounded-2xl border p-5 flex flex-col sm:p-7 ${
                   plan.featured
                     ? "border-indigo-600 bg-white shadow-[0_20px_60px_-20px_rgba(42,59,143,0.35)] md:-translate-y-3"
                     : "border-sand-300 bg-paper"
@@ -143,7 +143,7 @@ export function Pricing() {
                 <p className="text-[13.5px] text-ink-soft mb-6 min-h-[38px]">{plan.tagline}</p>
 
                 <div className="mb-1 flex items-baseline gap-1.5">
-                  <span className="font-display text-4xl font-bold">{formatNaira(price)}</span>
+                  <span className="font-display text-3xl font-bold sm:text-4xl">{formatNaira(price)}</span>
                   <span className="text-sm text-ink-soft">/mo</span>
                 </div>
                 <p className="text-xs text-ink-soft mb-6">

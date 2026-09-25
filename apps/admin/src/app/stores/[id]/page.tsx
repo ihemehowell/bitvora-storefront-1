@@ -144,10 +144,11 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
       <OnboardingProgress storeId={store.id} items={checklistItems} />
 
       <div className="mb-8">
-        <Card className="p-5 mb-3">
-          <div className="flex items-start justify-between mb-1">
+        <Card className="p-5 mb-3 border-0 bg-paper">
             <p className="text-xs text-ink/50 font-medium">Revenue · this week</p>
-            {revenueTrend.label && (
+<div className="flex flex-col items-start  mb-1">
+          <p className="font-mono text-3xl font-semibold mb-1">₦{revenueThisWeek.toLocaleString()}</p>
+          {revenueTrend.label && (
               <span
                 className={`text-xs font-medium ${
                   revenueTrend.trend === 'up'
@@ -161,8 +162,7 @@ export default async function StoreDashboardPage({ params }: { params: Promise<{
                 {revenueTrend.label}
               </span>
             )}
-          </div>
-          <p className="font-mono text-4xl font-semibold mb-3">₦{revenueThisWeek.toLocaleString()}</p>
+            </div>
         </Card>
 
         <RevenueChart data={dailyRevenue} />

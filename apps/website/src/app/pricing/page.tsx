@@ -5,7 +5,7 @@ import { Pricing } from "@/components/Pricing";
 
 export default function PricingPage() {
   return (
-    <main className="bg-paper text-ink">
+    <main className="overflow-x-hidden bg-paper text-ink">
       <Nav />
       <Pricing />
       <FAQ />
