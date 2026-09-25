@@ -7,6 +7,7 @@ import { Home, Plus, Grid, PackageBox, Storefront, Receipt, User, Users } from '
 import { IconChevronRight, IconChevronDown, IconPalette, IconHelpCircle, IconLogout } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../lib/supabase/client'
+import { ThemeToggle } from './ThemeToggle'
 import Image from 'next/image'
 
 type NavItem = { href: string; icon: React.ComponentType<{ className?: string }>; label: string }
@@ -238,6 +239,7 @@ export function Sidebar({
         </nav>
 
         <div className="relative p-3 border-t border-white/10 space-y-0.5">
+          <ThemeToggle collapsed={collapsed} />
           <button
             className={`group relative w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-indigo-100/70 hover:bg-white/5 hover:text-white transition-colors ${
               collapsed ? 'justify-center' : ''

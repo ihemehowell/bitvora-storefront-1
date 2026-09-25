@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { createClient } from "../lib/supabase/server";
 import { Shell } from "../components/Shell";
+
 import { Inter, Space_Grotesk } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/next"
+import { ThemeScript } from "@/components/ThemeScript";
 
 const spaceGroteskHeading = Space_Grotesk({subsets:['latin'],variable:'--font-heading'});
 
@@ -24,7 +26,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : { data: null };
 
   return (
-    <html lang="en" className={cn("font-sans", inter.variable, spaceGroteskHeading.variable)}>
+    // suppressHydrationWarning: ThemeScript mutates this element's class
+    // before React hydrates, which would otherwise trigger a mismatch warning.
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", inter.variable, spaceGroteskHeading.variable)}>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="antialiased bg-paper text-ink">
         <Shell
         userEmail={user?.email ?? null}
