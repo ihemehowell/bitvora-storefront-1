@@ -1,27 +1,22 @@
 'use client'
 
-import { useSyncExternalStore } from 'react'
+import { useEffect, useState } from 'react'
 import { IconSun, IconMoon } from '@tabler/icons-react'
 
 const THEME_STORAGE_KEY = 'bitvora-admin-theme'
 
 export function ThemeToggle({ collapsed }: { collapsed?: boolean }) {
   // Real state lives on the <html> class (set pre-hydration by ThemeScript).
-  const isDark = useSyncExternalStore(
-    (onStoreChange) => {
-      const observer = new MutationObserver(onStoreChange)
-      observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class'],
-      })
-      return () => observer.disconnect()
-    },
-    () => document.documentElement.classList.contains('dark'),
-    () => false,
-  )
+  // We just mirror it here after mount to pick the right icon/label.
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'))
+  }, [])
 
   function toggle() {
     const next = !isDark
+    setIsDark(next)
     document.documentElement.classList.toggle('dark', next)
     localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
   }
@@ -42,7 +37,7 @@ export function ThemeToggle({ collapsed }: { collapsed?: boolean }) {
       )}
       {!collapsed && label}
       {collapsed && (
-        <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-950 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
+        <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white dark:bg-sand-100 px-2.5 py-1.5 text-xs font-medium text-indigo-950 dark:text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
           {label}
         </span>
       )}

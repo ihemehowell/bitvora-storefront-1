@@ -67,7 +67,8 @@ export default function SignupPage() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}  className="px-2 py-3"/>
         </div>
-        <Button type="submit" disabled={loading} className="w-full bg-ink">
+        {/* Was `bg-ink` — see LoginPage for why that breaks in dark mode. */}
+        <Button type="submit" disabled={loading} variant="primary" className="w-full">
           {loading ? 'Creating account...' : 'Sign up'}
         </Button>
       </form>

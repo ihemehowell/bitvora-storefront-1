@@ -32,7 +32,7 @@ export function HeroImageUploader({
       {url ? (
         <div className="relative">
           <img src={url} alt="" className="w-full h-32 object-cover rounded-lg" />
-          <label className="absolute bottom-2 right-2 bg-white/90 text-xs rounded-md px-2 py-1 cursor-pointer">
+          <label className="absolute bottom-2 right-2 bg-white/90 dark:bg-sand-100/90 text-ink text-xs rounded-md px-2 py-1 cursor-pointer">
             {uploading ? 'Uploading...' : 'Change'}
             <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} className="hidden" />
           </label>

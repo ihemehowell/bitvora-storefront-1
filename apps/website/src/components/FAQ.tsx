@@ -5,15 +5,17 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { fadeUp, staggerContainer, viewport, EASE } from '../lib/motion'
 
-const FAQS = [
+export type FaqItem = { q: string; a: string }
+
+const FAQS: FaqItem[] = [
   { q: 'Do I need to know how to code?', a: 'No. Bitvora Storefront is built for non-technical merchants — you customize your store visually, no code required.' },
   { q: 'Can customers order via WhatsApp?', a: 'Yes. Every product has a built-in "Order via WhatsApp" option that pre-fills the customer\'s message with product details.' },
   { q: 'What payment methods are supported?', a: 'Bank transfer and pay-on-delivery are supported today, with card payments coming soon.' },
   { q: 'Can I use my own domain?', a: 'Custom domains are on our roadmap. Right now, your store gets a Bitvora Storefront link you can share anywhere.' },
-  { q: 'Is there a free plan?', a: 'Yes — you can create your store, add products, and start selling for free.' },
+  { q: 'Is there a free plan?', a: 'No. Every Bitvora Storefront plan is paid, and each plan\'s limits are listed on the pricing page.' },
 ]
 
-export function FAQ() {
+export function FAQ({ items = FAQS }: { items?: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
@@ -44,7 +46,7 @@ export function FAQ() {
           viewport={viewport}
           className="space-y-3"
         >
-          {FAQS.map((item, i) => {
+          {items.map((item, i) => {
             const isOpen = open === i
             return (
               <motion.div

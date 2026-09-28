@@ -159,11 +159,13 @@ export function CustomizeWorkspace({
 
           {showLeftFade && (
             <>
-              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent" />
+              {/* from-white assumes a white page bg — dark:from-paper matches
+                  the actual dark page background instead */}
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-paper to-transparent" />
               <button
                 onClick={() => scrollTabs('left')}
                 aria-label="Scroll tabs left"
-                className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
+                className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-sand-100 border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
               >
                 <IconChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -171,11 +173,11 @@ export function CustomizeWorkspace({
           )}
           {showRightFade && (
             <>
-              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent" />
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-paper to-transparent" />
               <button
                 onClick={() => scrollTabs('right')}
                 aria-label="Scroll tabs right"
-                className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
+                className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-sand-100 border border-sand-200 shadow-sm text-ink/50 hover:text-indigo-600"
               >
                 <IconChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -344,7 +346,7 @@ export function CustomizeWorkspace({
                 onChange={(e) => setAbout({ ...about, body: e.target.value })}
                 rows={5}
                 placeholder="Tell customers about your brand..."
-                className="w-full rounded-lg border border-sand-200 px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-indigo-600"
+                className="w-full rounded-lg border border-sand-200 bg-white dark:bg-sand-100 px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-indigo-600"
               />
             </div>
           </div>
@@ -363,7 +365,7 @@ export function CustomizeWorkspace({
                     onClick={() => handleToggleVisibility(s.type, !s.is_visible)}
                     className={`w-9 h-5 rounded-full relative transition-colors ${s.is_visible ? 'bg-indigo-600' : 'bg-sand-200'}`}
                   >
-                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${s.is_visible ? 'left-4.5' : 'left-0.5'}`} />
+                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-sand-400 transition-all ${s.is_visible ? 'left-4.5' : 'left-0.5'}`} />
                   </button>
                 </div>
               </div>
@@ -424,7 +426,7 @@ export function CustomizeWorkspace({
       {/* Right: live preview — hidden on mobile while editing */}
       <div className={`lg:sticky lg:top-6 self-start ${mobileView === 'edit' ? 'hidden lg:block' : ''}`}>
         <p className="text-xs font-medium text-ink/50 uppercase tracking-wide mb-2">Live preview</p>
-        <div className="border border-sand-200 rounded-2xl overflow-hidden bg-white">
+        <div className="border border-sand-200 rounded-2xl overflow-hidden bg-white dark:bg-sand-100">
           <div className="border-b border-sand-100 px-4 py-2.5 flex items-center gap-1.5">
             <Storefront className="w-3.5 h-3.5" style={{ color }} />
             <span className="text-xs font-medium">{storeName}</span>
@@ -501,14 +503,14 @@ export function CustomizeWorkspace({
 
       {/* Mobile-only: sticky Edit/Preview toggle + Save, pinned to bottom */}
       <div
-        className="lg:hidden fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-sand-200 bg-white/95 backdrop-blur px-4 py-2.5"
+        className="lg:hidden fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t border-sand-200 bg-white/95 dark:bg-paper/95 backdrop-blur px-4 py-2.5"
         style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}
       >
         <div className="flex flex-1 rounded-lg bg-sand-100 p-1">
           <button
             onClick={() => setMobileView('edit')}
             className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-colors ${
-              mobileView === 'edit' ? 'bg-white shadow-sm text-indigo-600' : 'text-ink/50'
+              mobileView === 'edit' ? 'bg-white dark:bg-sand-300 shadow-sm text-indigo-600' : 'text-ink/50'
             }`}
           >
             <IconPencil className="w-3.5 h-3.5" stroke={1.75} /> Edit
@@ -516,7 +518,7 @@ export function CustomizeWorkspace({
           <button
             onClick={() => setMobileView('preview')}
             className={`flex-1 flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-colors ${
-              mobileView === 'preview' ? 'bg-white shadow-sm text-indigo-600' : 'text-ink/50'
+              mobileView === 'preview' ? 'bg-white dark:bg-sand-300 shadow-sm text-indigo-600' : 'text-ink/50'
             }`}
           >
             <IconEye className="w-3.5 h-3.5" stroke={1.75} /> Preview

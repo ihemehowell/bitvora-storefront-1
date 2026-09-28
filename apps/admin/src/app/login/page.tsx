@@ -56,7 +56,14 @@ export default function LoginPage() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="px-2 py-3"/>
         </div>
-        <Button type="submit" disabled={loading} className="w-full bg-ink ">
+        {/*
+          Was `bg-ink` — that token is inverted for dark mode (it's meant
+          for text, not a solid button surface), so it went from a
+          near-black button in light mode to a near-white one in dark mode
+          with white text on top: invisible. `variant="primary"` uses the
+          actual indigo brand color, which is already dark-mode-correct.
+        */}
+        <Button type="submit" disabled={loading} variant="primary" className="w-full">
           {loading ? 'Logging in...' : 'Log in'}
         </Button>
       </form>

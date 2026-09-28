@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Home, Plus, Grid, PackageBox, Storefront, Receipt, User, Users } from 'switch-icons'
 import { IconChevronRight, IconChevronDown, IconPalette, IconHelpCircle, IconLogout } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
@@ -24,7 +25,7 @@ function SimpleLink({ item, active, collapsed, onClick }: { item: NavItem; activ
       <item.icon className="w-4 h-4 shrink-0" />
       {!collapsed && item.label}
       {collapsed && (
-        <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-950 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
+        <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white dark:bg-sand-100 px-2.5 py-1.5 text-xs font-medium text-indigo-950 dark:text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
           {item.label}
         </span>
       )}
@@ -51,9 +52,13 @@ function GroupNav({
   const [open, setOpen] = useState(true)
   const [flyoutOpen, setFlyoutOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const [flyoutPos, setFlyoutPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
 
   function handleEnter() {
     if (closeTimer.current) clearTimeout(closeTimer.current)
+    const rect = triggerRef.current?.getBoundingClientRect()
+    if (rect) setFlyoutPos({ top: rect.top, left: rect.right + 12 })
     setFlyoutOpen(true)
   }
   function handleLeave() {
@@ -62,7 +67,7 @@ function GroupNav({
 
   if (collapsed) {
     return (
-      <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+      <div ref={triggerRef} className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
         <div
           className={`flex items-center justify-center rounded-lg px-3 py-2 text-sm cursor-default ${
             isAnyActive ? 'bg-white/10 text-white' : 'text-indigo-100/70'
@@ -70,24 +75,37 @@ function GroupNav({
         >
           <Icon className="w-4 h-4 shrink-0" />
         </div>
-        {flyoutOpen && (
-          <div className="absolute left-full top-0 ml-3 w-52 rounded-xl bg-white shadow-2xl p-2 z-50">
-            <p className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink/40">{label}</p>
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClick}
-                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors ${
-                  pathname === item.href ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-ink/70 hover:bg-sand-100'
-                }`}
-              >
-                <item.icon className="w-4 h-4 shrink-0" />
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        )}
+        {/*
+          Rendered in a portal with fixed positioning: the <nav> has
+          overflow-x-hidden (so it can scroll vertically), which clips any
+          absolutely-positioned child that extends past the collapsed
+          sidebar's width — that's what made these options invisible.
+        */}
+        {flyoutOpen &&
+          createPortal(
+            <div
+              style={{ position: 'fixed', top: flyoutPos.top, left: flyoutPos.left }}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
+              className="w-52 rounded-xl bg-white dark:bg-sand-100 border border-transparent dark:border-sand-200 shadow-2xl p-2 z-[60]"
+            >
+              <p className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink/40 truncate">{label}</p>
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClick}
+                  className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors ${
+                    pathname === item.href ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-ink/70 hover:bg-sand-100 dark:hover:bg-sand-200'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  {item.label}
+                </Link>
+              ))}
+            </div>,
+            document.body
+          )}
       </div>
     )
   }
@@ -100,11 +118,11 @@ function GroupNav({
           isAnyActive ? 'text-white font-medium' : 'text-indigo-100/70 hover:text-white'
         }`}
       >
-        <span className="flex items-center gap-2.5">
+        <span className="flex items-center gap-2.5 min-w-0">
           <Icon className="w-4 h-4 shrink-0" />
-          {label}
+          <span className="truncate">{label}</span>
         </span>
-        <IconChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform  ${open ? '' : '-rotate-90'}`} stroke={1.75} />
+        <IconChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${open ? '' : '-rotate-90'}`} stroke={1.75} />
       </button>
       {open && (
         <div className="mt-0.5 ml-3.5 pl-3 border-l border-white/10 space-y-0.5">
@@ -147,6 +165,26 @@ export function Sidebar({
   const storeMatch = pathname.match(/^\/stores\/([^/]+)/)
   const storeId = storeMatch && storeMatch[1] !== 'new' ? storeMatch[1] : null
   const [collapsed, setCollapsed] = useState(false)
+  const [storeName, setStoreName] = useState<{ id: string; name: string } | null>(null)
+
+  // The sidebar only knows the store id (from the URL), so look up its name.
+  useEffect(() => {
+    if (!storeId) return
+    let cancelled = false
+    createClient()
+      .from('stores')
+      .select('name')
+      .eq('id', storeId)
+      .single()
+      .then(({ data }) => {
+        if (!cancelled && data?.name) setStoreName({ id: storeId, name: data.name })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [storeId])
+
+  const currentStoreName = storeName && storeName.id === storeId ? storeName.name : null
 
   const isActive = (href: string) => pathname === href
   const initial = merchantName?.[0]?.toUpperCase() || userEmail?.[0]?.toUpperCase() || '?'
@@ -190,7 +228,7 @@ export function Sidebar({
         {/* Collapse toggle — floats on the edge */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="hidden lg:flex absolute -right-3 top-8 z-50 w-6 h-6 rounded-full bg-white shadow-md items-center justify-center text-forground hover:bg-sand-100 transition-colors"
+          className="hidden lg:flex absolute -right-3 top-8 z-50 w-6 h-6 rounded-full bg-white dark:bg-sand-100 shadow-md items-center justify-center text-indigo-900 dark:text-ink hover:bg-sand-100 dark:hover:bg-sand-200 transition-colors"
         >
           <IconChevronRight className={`w-3.5 h-3.5 transition-transform ${collapsed ? '' : 'rotate-180'}`} stroke={2} />
         </button>
@@ -225,7 +263,7 @@ export function Sidebar({
 
           {storeId && (
             <div className="pt-2">
-              <GroupNav label="This store" icon={Storefront} items={storeSubLinks} pathname={pathname} collapsed={collapsed} onClick={onClose} />
+              <GroupNav label={currentStoreName ?? 'This store'} icon={Storefront} items={storeSubLinks} pathname={pathname} collapsed={collapsed} onClick={onClose} />
             </div>
           )}
 
@@ -248,7 +286,7 @@ export function Sidebar({
             <IconHelpCircle className="w-4 h-4 shrink-0" stroke={1.75} />
             {!collapsed && 'Help'}
             {collapsed && (
-              <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-950 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
+              <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white dark:bg-sand-100 px-2.5 py-1.5 text-xs font-medium text-indigo-950 dark:text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
                 Help
               </span>
             )}
@@ -262,7 +300,7 @@ export function Sidebar({
             <IconLogout className="w-4 h-4 shrink-0" stroke={1.75} />
             {!collapsed && 'Log out'}
             {collapsed && (
-              <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-950 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
+              <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-white dark:bg-sand-100 px-2.5 py-1.5 text-xs font-medium text-indigo-950 dark:text-ink opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-50">
                 Log out
               </span>
             )}

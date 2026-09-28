@@ -3,66 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconLock } from "@tabler/icons-react";
 import { fadeUp, staggerContainer, viewport } from "../lib/motion";
+import { formatNaira, Interval, monthlyPrice, PLANS, planSignupUrl } from "@/lib/plans";
+import { PlanComparison } from "./PlanComparison";
 
-type Plan = {
-  name: string;
-  tagline: string;
-  monthly: number;
-  featured?: boolean;
-  features: string[];
-};
 
-const PLANS: Plan[] = [
-  {
-    name: "Starter",
-    tagline: "For sellers just getting their store online.",
-    monthly: 5000,
-    features: [
-      "Up to 30 products",
-      "WhatsApp order button on every product",
-      "Bank transfer & pay-on-delivery checkout",
-      "Brand color, hero section & logo",
-      "Email support",
-    ],
-  },
-  {
-    name: "Growth",
-    tagline: "For stores ready to look and sell like a real brand.",
-    monthly: 12000,
-    featured: true,
-    features: [
-      "Everything in Starter",
-      "Up to 150 products",
-      "Full homepage customization — banners, collections, about",
-      "Font pairing & layout options",
-      "Priority WhatsApp support",
-    ],
-  },
-  {
-    name: "Pro",
-    tagline: "For established merchants with serious order volume.",
-    monthly: 25000,
-    features: [
-      "Everything in Growth",
-      "Unlimited products",
-      "Priority order & payment support",
-      "Early access to new features",
-      "Dedicated onboarding call",
-    ],
-  },
-];
-
-// 2 months free on annual — adjust to match whatever discount you actually offer.
-const ANNUAL_MONTHS = 10;
-
-function formatNaira(amount: number) {
-  return `₦${amount.toLocaleString()}`;
-}
 
 export function Pricing() {
-  const [annual, setAnnual] = useState(false);
+  const [interval, setInterval] = useState<Interval>("monthly");
+  const annual = interval === "annual";
 
   return (
     <section className="py-16 sm:py-24 md:py-32">
@@ -81,10 +31,11 @@ export function Pricing() {
             Pricing
           </motion.span>
           <motion.h1 variants={fadeUp} className="mb-5 font-display text-2xl font-bold leading-tight sm:text-3xl md:text-5xl">
-            Simple pricing, no free tier to outgrow.
+            Pick a plan that fits your store.
           </motion.h1>
           <motion.p variants={fadeUp} className="text-[15px] leading-relaxed text-ink-soft sm:text-[16px]">
-            Every plan gets a fully branded storefront, WhatsApp ordering, and Nigeria-first checkout. Start on a 14-day free trial — no card required to try it out.
+            Every plan gets a fully branded storefront, WhatsApp ordering, and Nigeria-first checkout. Higher plans
+            unlock more stores, more products and deeper customization — every limit is listed below.
           </motion.p>
         </motion.div>
 
@@ -100,7 +51,8 @@ export function Pricing() {
           <button
             role="switch"
             aria-checked={annual}
-            onClick={() => setAnnual((v) => !v)}
+            aria-label="Bill annually"
+            onClick={() => setInterval(annual ? "monthly" : "annual")}
             className="relative h-7 w-13 rounded-full bg-indigo-900 transition-colors"
           >
             <span
@@ -119,60 +71,84 @@ export function Pricing() {
           initial="hidden"
           whileInView="show"
           viewport={viewport}
-          className="grid gap-6 md:grid-cols-3 items-start"
+          className="grid items-start gap-6 md:grid-cols-3"
         >
           {PLANS.map((plan) => {
-            const price = annual ? Math.round((plan.monthly * ANNUAL_MONTHS) / 12) : plan.monthly;
+            const price = monthlyPrice(plan, interval);
             return (
               <motion.div
-                key={plan.name}
+                key={plan.id}
                 variants={fadeUp}
-                className={`relative min-w-0 rounded-2xl border p-5 flex flex-col sm:p-7 ${
+                className={`relative flex min-w-0 flex-col rounded-2xl border p-5 sm:p-7 ${
                   plan.featured
                     ? "border-indigo-600 bg-white shadow-[0_20px_60px_-20px_rgba(42,59,143,0.35)] md:-translate-y-3"
                     : "border-sand-300 bg-paper"
                 }`}
               >
                 {plan.featured && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 text-white text-[11px] font-bold uppercase tracking-wide px-3 py-1">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
                     Most popular
                   </span>
                 )}
 
-                <h3 className="font-display text-xl font-bold mb-1.5">{plan.name}</h3>
-                <p className="text-[13.5px] text-ink-soft mb-6 min-h-[38px]">{plan.tagline}</p>
+                <h3 className="mb-1.5 font-display text-xl font-bold">{plan.name}</h3>
+                <p className="mb-6 min-h-[38px] text-[13.5px] text-ink-soft">{plan.tagline}</p>
 
                 <div className="mb-1 flex items-baseline gap-1.5">
                   <span className="font-display text-3xl font-bold sm:text-4xl">{formatNaira(price)}</span>
                   <span className="text-sm text-ink-soft">/mo</span>
                 </div>
-                <p className="text-xs text-ink-soft mb-6">
+                <p className="mb-6 text-xs text-ink-soft">
                   {annual ? `Billed ${formatNaira(price * 12)} annually` : "Billed monthly"}
                 </p>
 
-                <ul className="space-y-2.5 mb-8 flex-1">
+                {/* Headline limits */}
+                <dl className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-sand-200 bg-sand-200">
+                  {plan.limits.map((l) => (
+                    <div key={l.label} className="bg-sand-100 px-3 py-2.5">
+                      <dd className="font-display text-lg font-bold leading-tight">{l.value}</dd>
+                      <dt className="text-[11.5px] text-ink-soft">{l.label}</dt>
+                    </div>
+                  ))}
+                </dl>
+
+                <ul className="mb-4 space-y-2.5">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-[14px] text-ink">
-                      <IconCheck size={16} className="text-palm-600 shrink-0 mt-0.5" />
+                      <IconCheck size={16} className="mt-0.5 shrink-0 text-palm-600" />
                       {f}
                     </li>
                   ))}
                 </ul>
 
+                {plan.locked.length > 0 && (
+                  <ul className="mb-8 space-y-2 border-t border-dashed border-sand-300 pt-4">
+                    {plan.locked.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-[13.5px] text-ink/45">
+                        <IconLock size={15} className="mt-0.5 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="flex-1" />
+
                 <Link
-                  href="https://bitvora-admin.vercel.app/signup"
-                  className={`text-center rounded-lg px-4 py-3 text-sm font-semibold transition-colors ${
+                  href={planSignupUrl(plan.id, interval)}
+                  className={`rounded-lg px-4 py-3 text-center text-sm font-semibold transition-colors ${
                     plan.featured
                       ? "bg-indigo-600 text-white hover:bg-indigo-700"
                       : "bg-sand-100 text-ink hover:bg-sand-200"
                   }`}
                 >
-                  Start free trial
+                  Get {plan.name}
                 </Link>
               </motion.div>
             );
           })}
         </motion.div>
+
+        <PlanComparison />
 
         <motion.p
           variants={fadeUp}
@@ -181,7 +157,8 @@ export function Pricing() {
           viewport={viewport}
           className="mx-auto mt-12 max-w-[640px] text-center text-[13px] text-ink-soft"
         >
-          Prices are in Naira and exclude any bank or payment provider fees on transactions your customers make directly to you. No setup fees, cancel anytime.
+          Prices are in Naira and exclude any bank or payment provider fees on transactions your customers make
+          directly to you. No setup fees, cancel anytime.
         </motion.p>
       </div>
     </section>
