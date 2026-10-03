@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase/server'
 import { normalizeNigerianPhone, sendSms } from '../../lib/termii'
 import { verifyCac, verifyNin } from '../../lib/identity-verification'
+import { rateLimit } from '../../lib/rate-limit' 
 
 const OTP_TTL_MINUTES = 10
 const MAX_OTP_ATTEMPTS = 5
@@ -39,6 +40,12 @@ export async function requestPhoneOtp(prevState: { error?: string; sent?: boolea
     return { error: 'Enter a valid Nigerian phone number.' }
   }
 
+  const byMerchant = await rateLimit('otp-send', merchant.id, 3, '10 m', { failOpen: false })
+  const byPhone = await rateLimit('otp-phone', phone, 3, '1 h', { failOpen: false })
+  if (!byMerchant.ok || !byPhone.ok) {
+    return { error: `Too many code requests. Try again in ${Math.max(byMerchant.retryAfter, byPhone.retryAfter)}s.` }
+  }
+
   const code = randomInt(100000, 999999).toString()
   const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000).toISOString()
 
@@ -70,6 +77,9 @@ export async function confirmPhoneOtp(prevState: { error?: string; verified?: bo
 
   const code = (formData.get('code') as string || '').trim()
   if (!code) return { error: 'Enter the code we sent you.' }
+
+  const rl = await rateLimit('otp-confirm', merchant.id, 10, '10 m', { failOpen: false })
+  if (!rl.ok) return { error: `Too many attempts. Try again in ${rl.retryAfter}s.` }
 
   const { data: otpRow } = await supabase
     .from('merchant_otps')
@@ -106,6 +116,9 @@ export async function submitIdentityVerification(
   formData: FormData
 ) {
   const { supabase, merchant } = await getMerchant()
+
+  const rl = await rateLimit('identity', merchant.id, 5, '1 h', { failOpen: false })
+  if (!rl.ok) return { error: 'Too many verification attempts. Try again later.' }
 
   const type = formData.get('type') as 'nin' | 'cac'
   const reference = (formData.get('reference') as string || '').trim()

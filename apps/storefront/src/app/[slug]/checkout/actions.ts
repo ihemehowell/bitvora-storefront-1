@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '../../../lib/supabase/server'
+import { getClientIp, rateLimit } from '../../../lib/rate-limit'
 
 type CheckoutInput = {
   storeId: string
@@ -20,6 +21,9 @@ type CheckoutInput = {
 // the RPC below ignores them and recomputes everything from live product
 // prices, so a tampered client payload can't change what gets charged.
 export async function createOrder(input: CheckoutInput) {
+  const rl = await rateLimit('order', await getClientIp(), 5, '10 m')
+  if (!rl.ok) return { error: 'Too many orders from this device. Try again in a few minutes.' }
+
   const supabase = await createClient()
 
   const { data, error } = await supabase.rpc('create_order', {
